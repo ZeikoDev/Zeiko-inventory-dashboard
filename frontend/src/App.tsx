@@ -12,6 +12,8 @@ import EditCompanyPage from './pages/EditCompanyPage';
 import EditInventoryPage from './pages/EditInventoryPage';
 import EditProductPage from './pages/EditProductPage';
 import UsersPage from './pages/UsersPage';
+import CreateUserPage from './pages/CreateUserPage';
+import EditUserPage from './pages/EditUserPage';
 import { getAuth } from './services/auth.service';
 
 const theme = createTheme({
@@ -224,6 +226,8 @@ function App() {
               <UsersPage />
             </RequireAdmin>
           } />
+          <Route path="/users/create" element={<RequireAdmin><CreateUserPage /></RequireAdmin>} />
+          <Route path="/users/edit/:id" element={<RequireAdmin><EditUserPage /></RequireAdmin>} />
           <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
       </Router>

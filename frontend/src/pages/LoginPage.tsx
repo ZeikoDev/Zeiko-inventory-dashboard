@@ -12,7 +12,7 @@ import {
   Stack
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { login } from '../services/auth.service';
+import { login, saveAuth } from '../services/auth.service';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -24,7 +24,8 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(username, password);
+      const data = await login(username, password);
+      saveAuth(data);
       navigate('/dashboard');
     } catch (err) {
       setError('Credenciales inválidas');
