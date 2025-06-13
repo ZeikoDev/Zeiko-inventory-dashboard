@@ -22,10 +22,11 @@ const DashboardPage = () => {
   const cardStyles = {
     p: 4,
     borderRadius: 4,
-    minHeight: 220,
+    minHeight: 320,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    justifyContent: 'space-between',
     gap: 2,
     background: 'rgba(26, 26, 26, 0.8)',
     backdropFilter: 'blur(10px)',
@@ -71,12 +72,13 @@ const DashboardPage = () => {
     <Box sx={{
       minHeight: '100vh',
       bgcolor: 'background.default',
-      px: { xs: 2, md: 4, lg: 8, xl: 12 },
+      px: 0,
       py: 6,
-      width: '100%',
+      width: '100vw',
       maxWidth: '100vw',
       background: 'radial-gradient(circle at top right, rgba(0, 255, 157, 0.1), transparent 50%), radial-gradient(circle at bottom left, rgba(0, 255, 255, 0.1), transparent 50%)',
       position: 'relative',
+      overflowX: 'hidden',
     }}>
       {/* Logout Button */}
       <Button
@@ -147,13 +149,21 @@ const DashboardPage = () => {
         container
         spacing={4}
         sx={{
-          maxWidth: { xs: '100%', md: '90%', lg: '85%', xl: '80%' },
-          mx: 'auto',
+          width: '100vw',
+          margin: 0,
         }}
       >
+        {/* Fallback para evitar grid roto */}
+        {(!userRole || userRole === 'admin' || userRole === 'external') ? null : (
+          <Grid item xs={12}>
+            <Paper sx={{ ...cardStyles, width: '100%' }}>
+              <Typography variant="h6">Cargando...</Typography>
+            </Paper>
+          </Grid>
+        )}
         {userRole === 'admin' && (
           <Grid item xs={12} sm={6} md={3}>
-            <Paper sx={{ ...cardStyles }}>
+            <Paper sx={{ ...cardStyles, width: '100%' }}>
               <Avatar sx={{ ...avatarStyles, bgcolor: 'primary.main' }}>
                 <AccountBalanceWalletIcon fontSize="large" />
               </Avatar>
@@ -185,7 +195,7 @@ const DashboardPage = () => {
         )}
         {userRole === 'admin' && (
           <Grid item xs={12} sm={6} md={3}>
-            <Paper sx={{ ...cardStyles }}>
+            <Paper sx={{ ...cardStyles, width: '100%' }}>
               <Avatar sx={{ ...avatarStyles, bgcolor: 'secondary.main' }}>
                 <Inventory2Icon fontSize="large" />
               </Avatar>
@@ -215,8 +225,8 @@ const DashboardPage = () => {
             </Paper>
           </Grid>
         )}
-        <Grid item xs={12} sm={6} md={userRole === 'admin' ? 3 : 6}>
-          <Paper sx={{ ...cardStyles }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper sx={{ ...cardStyles, width: '100%' }}>
             <Avatar sx={{ ...avatarStyles, bgcolor: 'info.main' }}>
               <BusinessIcon fontSize="large" />
             </Avatar>
@@ -224,9 +234,7 @@ const DashboardPage = () => {
               Empresas
             </Typography>
             <Typography variant="body1" color="grey.300">
-              {userRole === 'admin'
-                ? 'Administra la información de tus empresas asociadas.'
-                : 'Mira las empresas asociadas.'}
+              Mira las empresas asociadas.
             </Typography>
             <Button
               variant="outlined"
@@ -249,7 +257,7 @@ const DashboardPage = () => {
         </Grid>
         {userRole === 'admin' && (
           <Grid item xs={12} sm={6} md={3}>
-            <Paper sx={{ ...cardStyles }}>
+            <Paper sx={{ ...cardStyles, width: '100%' }}>
               <Avatar sx={{ ...avatarStyles, bgcolor: 'success.main' }}>
                 <PeopleIcon fontSize="large" />
               </Avatar>
