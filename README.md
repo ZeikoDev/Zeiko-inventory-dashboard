@@ -220,7 +220,3 @@ Dado que este proyecto fue concebido como un MVP de alta velocidad, existen áre
 ## Licencia
 
 MIT
-
-```
-
-```
