@@ -105,7 +105,7 @@ const UsersPage = () => {
                     borderRadius: 2,
                     bgcolor: 'background.paper',
                     color: 'primary.main',
-                    boxShadow: '0 2px 8px 0 #00e1ff22',
+                    boxShadow: '0 2px 8px 0 #6366f122',
                     zIndex: 10,
                 }}
             >
@@ -131,7 +131,7 @@ const UsersPage = () => {
                                 borderRadius: 2,
                                 px: 3,
                                 py: 1,
-                                boxShadow: '0 0 16px 0 #00e1ff55',
+                                boxShadow: '0 0 16px 0 #6366f155',
                             }}
                         >
                             Crear Usuario

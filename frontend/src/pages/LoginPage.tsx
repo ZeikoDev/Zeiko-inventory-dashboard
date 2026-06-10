@@ -9,10 +9,12 @@ import {
   InputAdornment,
   IconButton,
   Alert,
-  Stack
+  Stack,
+  Avatar,
+  CircularProgress
 } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { login, saveAuth } from '../services/auth.service';
+import { Visibility, VisibilityOff, Inventory2Rounded } from '@mui/icons-material';
+import { login, saveAuth, AuthError } from '../services/auth.service';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -20,15 +22,20 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
     try {
       const data = await login(username, password);
       saveAuth(data);
       navigate('/dashboard');
     } catch (err) {
-      setError('Credenciales inválidas');
+      setError(err instanceof AuthError ? err.message : 'No se pudo iniciar sesión. Inténtalo de nuevo.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -36,137 +43,93 @@ const LoginPage = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        minWidth: '100vw',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'radial-gradient(circle at top right, rgba(0, 255, 157, 0.1), transparent 50%), radial-gradient(circle at bottom left, rgba(0, 255, 255, 0.1), transparent 50%)',
+        px: 2,
         py: 4,
       }}
     >
       <Paper
-        elevation={3}
+        elevation={0}
         sx={{
-          p: { xs: 3, sm: 4, md: 6 },
+          p: { xs: 3, sm: 5 },
           borderRadius: 4,
-          background: 'rgba(18, 18, 18, 0.8)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: '0 0 30px rgba(0, 255, 157, 0.1)',
-          maxWidth: { xs: '100%', sm: '600px', md: '800px' },
+          background: 'rgba(30, 41, 59, 0.7)',
+          backdropFilter: 'blur(16px)',
+          maxWidth: 440,
           width: '100%',
-          m: 'auto',
         }}
       >
-        <Stack spacing={4} alignItems="center">
-          <Typography
-            variant="h2"
-            component="h1"
-            fontWeight={700}
-            textAlign="center"
+        <Stack spacing={3} alignItems="center">
+          <Avatar
             sx={{
-              background: 'linear-gradient(45deg, #00ff9d, #00ffff)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              textShadow: '0 0 20px rgba(0, 255, 157, 0.3)',
-              letterSpacing: 2,
-              mb: 2,
-              fontSize: { xs: '2.5rem', sm: '3rem', md: '3.5rem' },
+              width: 64,
+              height: 64,
+              background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+              boxShadow: '0 8px 24px rgba(99, 102, 241, 0.4)',
             }}
           >
-            Zeiko Inventory Dashboard
-          </Typography>
+            <Inventory2Rounded fontSize="large" />
+          </Avatar>
 
-          <Typography
-            variant="h5"
-            color="text.secondary"
-            textAlign="center"
-            sx={{
-              mb: 4,
-              fontWeight: 500,
-              letterSpacing: 1,
-            }}
-          >
-            Inicia sesión para continuar
-          </Typography>
+          <Box textAlign="center">
+            <Typography
+              variant="h4"
+              component="h1"
+              sx={{
+                background: 'linear-gradient(135deg, #818cf8, #c084fc)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                mb: 1,
+              }}
+            >
+              Zeiko Inventory
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Inicia sesión para continuar
+            </Typography>
+          </Box>
 
           {error && (
-            <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
+            <Alert severity="error" sx={{ width: '100%' }}>
               {error}
             </Alert>
           )}
 
           <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
-            <Stack spacing={3}>
+            <Stack spacing={2.5}>
               <TextField
                 label="Usuario"
-                variant="outlined"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 fullWidth
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': {
-                      borderColor: 'rgba(255, 255, 255, 0.2)',
-                    },
-                    '&:hover fieldset': {
-                      borderColor: 'primary.main',
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: 'primary.main',
-                      boxShadow: '0 0 15px rgba(0, 255, 157, 0.3)',
-                    },
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: 'text.secondary',
-                  },
-                  '& .MuiInputLabel-root.Mui-focused': {
-                    color: 'primary.main',
-                  },
-                }}
+                autoComplete="username"
+                autoFocus
               />
 
               <TextField
                 label="Contraseña"
                 type={showPassword ? 'text' : 'password'}
-                variant="outlined"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 fullWidth
+                autoComplete="current-password"
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
                         onClick={() => setShowPassword(!showPassword)}
                         edge="end"
+                        aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                         sx={{ color: 'text.secondary' }}
                       >
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
                   ),
-                }}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': {
-                      borderColor: 'rgba(255, 255, 255, 0.2)',
-                    },
-                    '&:hover fieldset': {
-                      borderColor: 'primary.main',
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: 'primary.main',
-                      boxShadow: '0 0 15px rgba(0, 255, 157, 0.3)',
-                    },
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: 'text.secondary',
-                  },
-                  '& .MuiInputLabel-root.Mui-focused': {
-                    color: 'primary.main',
-                  },
                 }}
               />
 
@@ -175,19 +138,10 @@ const LoginPage = () => {
                 variant="contained"
                 size="large"
                 fullWidth
-                sx={{
-                  mt: 2,
-                  py: 1.5,
-                  borderRadius: 2,
-                  background: 'linear-gradient(45deg, #00ff9d, #00ffff)',
-                  boxShadow: '0 0 20px rgba(0, 255, 157, 0.3)',
-                  '&:hover': {
-                    background: 'linear-gradient(45deg, #00ff9d, #00ffff)',
-                    boxShadow: '0 0 30px rgba(0, 255, 157, 0.5)',
-                  },
-                }}
+                disabled={loading}
+                sx={{ py: 1.4, mt: 1 }}
               >
-                Iniciar Sesión
+                {loading ? <CircularProgress size={26} color="inherit" /> : 'Iniciar Sesión'}
               </Button>
             </Stack>
           </Box>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Box, Paper, Typography, Button, Alert, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { updateProduct, getProducts, type Product, type CreateProductData } from '../services/products.service';
+import { updateProduct, getProducts, type CreateProductData } from '../services/products.service';
 import { getCompanies, type Company } from '../services/companies.service';
 
 const EditProductPage = () => {
@@ -75,8 +75,6 @@ const EditProductPage = () => {
       navigate('/products');
     } catch (err: any) {
       setError(
-        err?.response?.data?.detail ||
-        (err?.response?.data && JSON.stringify(err.response.data)) ||
         err.message ||
         'Error al actualizar el producto'
       );
@@ -106,7 +104,7 @@ const EditProductPage = () => {
           maxWidth: 600,
           width: '100%',
           bgcolor: 'background.paper',
-          boxShadow: '0 8px 32px 0 rgba(0,225,255,0.15)',
+          boxShadow: '0 8px 32px 0 rgba(99,102,241,0.15)',
         }}
       >
         <Typography
@@ -232,7 +230,7 @@ const EditProductPage = () => {
                 py: 1.2,
                 fontSize: '1.1rem',
                 letterSpacing: 1,
-                boxShadow: '0 0 16px 0 #00e1ff55',
+                boxShadow: '0 0 16px 0 #6366f155',
               }}
               disabled={loading}
             >

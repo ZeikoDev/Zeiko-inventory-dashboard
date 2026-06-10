@@ -13,7 +13,8 @@ import Alert from '@mui/material/Alert';
 import { deleteInventory } from '../services/inventory.service';
 import { getAuth } from '../services/auth.service';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import axios from 'axios';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import { api, getApiErrorMessage } from '../services/api';
 import { getProducts, type Product } from '../services/products.service';
 import { getCompanies, type Company } from '../services/companies.service';
 
@@ -89,14 +90,16 @@ const InventoryPage = () => {
     setPdfError('');
     setPdfDialogOpen(true);
     try {
-      await axios.get('http://localhost:8000/api/inventory/send-pdf/', {
-        headers: {
-          Authorization: auth ? `Bearer ${auth.access}` : '',
-        },
-      });
-      setPdfMessage('El PDF fue enviado al correo correctamente (simulado).');
-    } catch (err: any) {
-      setPdfError('No se pudo enviar el PDF al correo.');
+      const response = await api.post('/inventory/generate_pdf/', {}, { responseType: 'blob' });
+      const url = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `reporte_inventario_${new Date().toISOString().slice(0, 10)}.pdf`;
+      link.click();
+      URL.revokeObjectURL(url);
+      setPdfMessage('El reporte PDF se generó y descargó correctamente.');
+    } catch (err) {
+      setPdfError(getApiErrorMessage(err, 'No se pudo generar el reporte PDF.'));
     }
   };
 
@@ -113,7 +116,7 @@ const InventoryPage = () => {
           borderRadius: 2,
           bgcolor: 'background.paper',
           color: 'primary.main',
-          boxShadow: '0 2px 8px 0 #00e1ff22',
+          boxShadow: '0 2px 8px 0 #6366f122',
           zIndex: 10,
         }}
       >
@@ -124,22 +127,33 @@ const InventoryPage = () => {
           <Typography variant="h5" color="primary.main" fontWeight={600} letterSpacing={1}>
             Inventario
           </Typography>
-          {userRole === 'admin' && (
+          <Box sx={{ display: 'flex', gap: 2 }}>
             <Button
-              variant="contained"
-              color="primary"
-              onClick={() => navigate('/inventory/create')}
-              sx={{
-                fontWeight: 600,
-                borderRadius: 2,
-                px: 3,
-                py: 1,
-                boxShadow: '0 0 16px 0 #00e1ff55',
-              }}
+              variant="outlined"
+              color="info"
+              startIcon={<PictureAsPdfIcon />}
+              onClick={handleSendPdf}
+              sx={{ fontWeight: 600, borderRadius: 2, px: 3, py: 1 }}
             >
-              Agregar al Inventario
+              Descargar reporte PDF
             </Button>
-          )}
+            {userRole === 'admin' && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => navigate('/inventory/create')}
+                sx={{
+                  fontWeight: 600,
+                  borderRadius: 2,
+                  px: 3,
+                  py: 1,
+                  boxShadow: '0 0 16px 0 #6366f155',
+                }}
+              >
+                Agregar al Inventario
+              </Button>
+            )}
+          </Box>
         </Box>
 
         {error && (
@@ -215,12 +229,14 @@ const InventoryPage = () => {
         </Dialog>
       )}
       <Dialog open={pdfDialogOpen} onClose={() => setPdfDialogOpen(false)}>
-        <DialogTitle>Enviar PDF al correo</DialogTitle>
+        <DialogTitle>Reporte PDF de inventario</DialogTitle>
         <DialogContent>
           {pdfError ? (
             <Alert severity="error">{pdfError}</Alert>
+          ) : pdfMessage ? (
+            <Alert severity="success">{pdfMessage}</Alert>
           ) : (
-            <Alert severity="success">{pdfMessage || 'Enviando PDF...'}</Alert>
+            <Alert severity="info">Generando PDF...</Alert>
           )}
         </DialogContent>
         <DialogActions>

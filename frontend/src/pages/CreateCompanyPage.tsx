@@ -31,7 +31,7 @@ const CreateCompanyPage = () => {
       await createCompany(formData);
       navigate('/companies');
     } catch (err: any) {
-      setError(err?.response?.data?.detail || 'Error al crear la empresa');
+      setError(err instanceof Error ? err.message : 'Error al crear la empresa');
     } finally {
       setLoading(false);
     }
@@ -62,7 +62,7 @@ const CreateCompanyPage = () => {
           borderRadius: 2,
           bgcolor: 'background.paper',
           color: 'primary.main',
-          boxShadow: '0 2px 8px 0 #00e1ff22',
+          boxShadow: '0 2px 8px 0 #6366f122',
           zIndex: 10,
         }}
       >
@@ -76,7 +76,7 @@ const CreateCompanyPage = () => {
           maxWidth: 600,
           width: '100%',
           bgcolor: 'background.paper',
-          boxShadow: '0 8px 32px 0 rgba(0,225,255,0.15)',
+          boxShadow: '0 8px 32px 0 rgba(99,102,241,0.15)',
         }}
       >
         <Typography
@@ -162,7 +162,7 @@ const CreateCompanyPage = () => {
                 py: 1.2,
                 fontSize: '1.1rem',
                 letterSpacing: 1,
-                boxShadow: '0 0 16px 0 #00e1ff55',
+                boxShadow: '0 0 16px 0 #6366f155',
               }}
               disabled={loading}
             >

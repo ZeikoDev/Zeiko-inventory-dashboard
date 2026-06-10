@@ -28,10 +28,10 @@ const DashboardPage = () => {
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 2,
-    background: 'rgba(26, 26, 26, 0.8)',
+    background: 'rgba(30, 41, 59, 0.8)',
     backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(0, 255, 157, 0.1)',
-    boxShadow: '0 0 20px rgba(0, 255, 157, 0.1)',
+    border: '1px solid rgba(99, 102, 241, 0.1)',
+    boxShadow: '0 0 20px rgba(99, 102, 241, 0.1)',
     transition: 'all 0.3s ease-in-out',
     position: 'relative',
     overflow: 'hidden',
@@ -42,21 +42,21 @@ const DashboardPage = () => {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'linear-gradient(45deg, rgba(0, 255, 157, 0.1), rgba(0, 255, 255, 0.1))',
+      background: 'linear-gradient(45deg, rgba(99, 102, 241, 0.1), rgba(34, 211, 238, 0.1))',
       opacity: 0,
       transition: 'opacity 0.3s ease-in-out',
       zIndex: 0,
     },
     '&:hover': {
       transform: 'translateY(-4px)',
-      boxShadow: '0 0 30px rgba(0, 255, 157, 0.2)',
-      border: '1px solid rgba(0, 255, 157, 0.2)',
+      boxShadow: '0 0 30px rgba(99, 102, 241, 0.2)',
+      border: '1px solid rgba(99, 102, 241, 0.2)',
       '&::before': {
         opacity: 1,
       },
       '& .MuiAvatar-root': {
         transform: 'scale(1.1)',
-        boxShadow: '0 0 20px rgba(0, 255, 157, 0.4)',
+        boxShadow: '0 0 20px rgba(99, 102, 241, 0.4)',
       },
     },
   };
@@ -65,7 +65,7 @@ const DashboardPage = () => {
     width: 56,
     height: 56,
     transition: 'all 0.3s ease-in-out',
-    boxShadow: '0 0 15px rgba(0, 255, 157, 0.2)',
+    boxShadow: '0 0 15px rgba(99, 102, 241, 0.2)',
   };
 
   return (
@@ -76,7 +76,7 @@ const DashboardPage = () => {
       py: 6,
       width: '100vw',
       maxWidth: '100vw',
-      background: 'radial-gradient(circle at top right, rgba(0, 255, 157, 0.1), transparent 50%), radial-gradient(circle at bottom left, rgba(0, 255, 255, 0.1), transparent 50%)',
+      background: 'radial-gradient(circle at top right, rgba(99, 102, 241, 0.1), transparent 50%), radial-gradient(circle at bottom left, rgba(34, 211, 238, 0.1), transparent 50%)',
       position: 'relative',
       overflowX: 'hidden',
     }}>
@@ -97,8 +97,8 @@ const DashboardPage = () => {
           py: 1,
           '&:hover': {
             borderWidth: 2,
-            boxShadow: '0 0 20px rgba(255, 0, 0, 0.4)',
-            backgroundColor: 'rgba(255, 0, 0, 0.1)',
+            boxShadow: '0 0 20px rgba(248, 113, 113, 0.4)',
+            backgroundColor: 'rgba(248, 113, 113, 0.1)',
           },
         }}
       >
@@ -113,13 +113,13 @@ const DashboardPage = () => {
             height: 48,
             bgcolor: 'primary.main',
             fontSize: 24,
-            boxShadow: '0 0 15px rgba(0, 255, 157, 0.3)',
+            boxShadow: '0 0 15px rgba(99, 102, 241, 0.3)',
           }}
         >
           {username.charAt(0).toUpperCase()}
         </Avatar>
         <Box>
-          <Typography variant="h6" fontWeight={500} color="primary.main" sx={{ textShadow: '0 0 10px rgba(0, 255, 157, 0.3)' }}>
+          <Typography variant="h6" fontWeight={500} color="primary.main" sx={{ textShadow: '0 0 10px rgba(99, 102, 241, 0.3)' }}>
             {username}
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -135,8 +135,8 @@ const DashboardPage = () => {
         color="primary.main"
         letterSpacing={2}
         sx={{
-          textShadow: '0 0 20px rgba(0, 255, 157, 0.5)',
-          background: 'linear-gradient(45deg, #00ff9d, #00ffff)',
+          textShadow: '0 0 20px rgba(99, 102, 241, 0.5)',
+          background: 'linear-gradient(45deg, #6366f1, #22d3ee)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           textAlign: 'center',
@@ -167,7 +167,7 @@ const DashboardPage = () => {
               <Avatar sx={{ ...avatarStyles, bgcolor: 'primary.main' }}>
                 <AccountBalanceWalletIcon fontSize="large" />
               </Avatar>
-              <Typography variant="h5" fontWeight={600} letterSpacing={1} sx={{ color: 'primary.main', textShadow: '0 0 10px rgba(0, 255, 157, 0.3)' }}>
+              <Typography variant="h5" fontWeight={600} letterSpacing={1} sx={{ color: 'primary.main', textShadow: '0 0 10px rgba(99, 102, 241, 0.3)' }}>
                 Productos
               </Typography>
               <Typography variant="body1" color="grey.300">
@@ -183,7 +183,7 @@ const DashboardPage = () => {
                   borderWidth: 2,
                   '&:hover': {
                     borderWidth: 2,
-                    boxShadow: '0 0 20px rgba(0, 255, 157, 0.4)',
+                    boxShadow: '0 0 20px rgba(99, 102, 241, 0.4)',
                   },
                 }}
                 onClick={() => navigate('/products')}
@@ -199,7 +199,7 @@ const DashboardPage = () => {
               <Avatar sx={{ ...avatarStyles, bgcolor: 'secondary.main' }}>
                 <Inventory2Icon fontSize="large" />
               </Avatar>
-              <Typography variant="h5" fontWeight={600} letterSpacing={1} sx={{ color: 'secondary.main', textShadow: '0 0 10px rgba(255, 0, 255, 0.3)' }}>
+              <Typography variant="h5" fontWeight={600} letterSpacing={1} sx={{ color: 'secondary.main', textShadow: '0 0 10px rgba(168, 85, 247, 0.3)' }}>
                 Inventario
               </Typography>
               <Typography variant="body1" color="grey.300">
@@ -215,7 +215,7 @@ const DashboardPage = () => {
                   borderWidth: 2,
                   '&:hover': {
                     borderWidth: 2,
-                    boxShadow: '0 0 20px rgba(255, 0, 255, 0.4)',
+                    boxShadow: '0 0 20px rgba(168, 85, 247, 0.4)',
                   },
                 }}
                 onClick={() => navigate('/inventory')}
@@ -230,7 +230,7 @@ const DashboardPage = () => {
             <Avatar sx={{ ...avatarStyles, bgcolor: 'info.main' }}>
               <BusinessIcon fontSize="large" />
             </Avatar>
-            <Typography variant="h5" fontWeight={600} letterSpacing={1} sx={{ color: 'info.main', textShadow: '0 0 10px rgba(0, 255, 255, 0.3)' }}>
+            <Typography variant="h5" fontWeight={600} letterSpacing={1} sx={{ color: 'info.main', textShadow: '0 0 10px rgba(34, 211, 238, 0.3)' }}>
               Empresas
             </Typography>
             <Typography variant="body1" color="grey.300">
@@ -246,7 +246,7 @@ const DashboardPage = () => {
                 borderWidth: 2,
                 '&:hover': {
                   borderWidth: 2,
-                  boxShadow: '0 0 20px rgba(0, 255, 255, 0.4)',
+                  boxShadow: '0 0 20px rgba(34, 211, 238, 0.4)',
                 },
               }}
               onClick={() => navigate('/companies')}
@@ -261,7 +261,7 @@ const DashboardPage = () => {
               <Avatar sx={{ ...avatarStyles, bgcolor: 'success.main' }}>
                 <PeopleIcon fontSize="large" />
               </Avatar>
-              <Typography variant="h5" fontWeight={600} letterSpacing={1} sx={{ color: 'success.main', textShadow: '0 0 10px rgba(0, 255, 0, 0.3)' }}>
+              <Typography variant="h5" fontWeight={600} letterSpacing={1} sx={{ color: 'success.main', textShadow: '0 0 10px rgba(52, 211, 153, 0.3)' }}>
                 Usuarios
               </Typography>
               <Typography variant="body1" color="grey.300">
@@ -277,7 +277,7 @@ const DashboardPage = () => {
                   borderWidth: 2,
                   '&:hover': {
                     borderWidth: 2,
-                    boxShadow: '0 0 20px rgba(0, 255, 0, 0.4)',
+                    boxShadow: '0 0 20px rgba(52, 211, 153, 0.4)',
                   },
                 }}
                 onClick={() => navigate('/users')}

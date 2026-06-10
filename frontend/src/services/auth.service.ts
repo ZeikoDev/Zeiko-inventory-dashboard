@@ -1,7 +1,6 @@
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
+import { api, getApiErrorMessage } from './api';
 import { validateLogin } from '../utils/validations';
-
-const API_URL = 'http://localhost:8000/api';
 
 export interface AuthResponse {
   access: string;
@@ -22,7 +21,7 @@ export const login = async (username: string, password: string): Promise<AuthRes
     // Validar datos antes de enviar al backend
     validateLogin({ username, password });
 
-    const response = await axios.post(`${API_URL}/token/`, { username, password });
+    const response = await api.post('/token/', { username, password });
     return response.data;
   } catch (error) {
     if (error instanceof AuthError) {
@@ -30,12 +29,12 @@ export const login = async (username: string, password: string): Promise<AuthRes
     }
     if (error instanceof AxiosError) {
       if (error.response?.status === 401) {
-        throw new AuthError('Credenciales inválidas', 401);
+        throw new AuthError('Usuario o contraseña incorrectos', 401);
       }
-      if (error.response?.status === 400) {
-        throw new AuthError('Datos de entrada inválidos', 400);
+      if (error.response?.status === 429) {
+        throw new AuthError('Demasiados intentos. Espera un momento e inténtalo de nuevo', 429);
       }
-      throw new AuthError(error.response?.data?.detail || 'Error en la autenticación', error.response?.status);
+      throw new AuthError(getApiErrorMessage(error, 'Error en la autenticación'), error.response?.status);
     }
     throw new AuthError('Error inesperado en la autenticación');
   }

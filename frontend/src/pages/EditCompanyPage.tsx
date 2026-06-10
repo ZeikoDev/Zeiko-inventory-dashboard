@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Box, Paper, Typography, Button, Alert, TextField } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { updateCompany, getCompanies, type Company, type CreateCompanyData } from '../services/companies.service';
+import { updateCompany, getCompanies, type CreateCompanyData } from '../services/companies.service';
 
 const EditCompanyPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -54,8 +54,6 @@ const EditCompanyPage = () => {
       navigate('/companies');
     } catch (err: any) {
       setError(
-        err?.response?.data?.detail ||
-        (err?.response?.data && JSON.stringify(err.response.data)) ||
         err.message ||
         'Error al actualizar la empresa'
       );
@@ -85,7 +83,7 @@ const EditCompanyPage = () => {
           maxWidth: 600,
           width: '100%',
           bgcolor: 'background.paper',
-          boxShadow: '0 8px 32px 0 rgba(0,225,255,0.15)',
+          boxShadow: '0 8px 32px 0 rgba(99,102,241,0.15)',
         }}
       >
         <Typography
@@ -167,7 +165,7 @@ const EditCompanyPage = () => {
                 py: 1.2,
                 fontSize: '1.1rem',
                 letterSpacing: 1,
-                boxShadow: '0 0 16px 0 #00e1ff55',
+                boxShadow: '0 0 16px 0 #6366f155',
               }}
               disabled={loading}
             >

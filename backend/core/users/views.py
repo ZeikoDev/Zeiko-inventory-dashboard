@@ -1,15 +1,21 @@
 from rest_framework import viewsets, permissions
-from rest_framework.decorators import action
-from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .models import User
 from .serializers import UserSerializer, UserCreateSerializer, CustomTokenObtainPairSerializer
+from core.core.permissions import IsAdminRole
 
 User = get_user_model()
 
+
+class LoginRateThrottle(AnonRateThrottle):
+    scope = 'login'
+
+
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+    throttle_classes = [LoginRateThrottle]
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -21,8 +27,15 @@ class UserViewSet(viewsets.ModelViewSet):
             return UserCreateSerializer
         return UserSerializer
 
+    def get_permissions(self):
+        # Solo los admins pueden crear o eliminar usuarios
+        if self.action in ('create', 'destroy'):
+            return [IsAdminRole()]
+        return super().get_permissions()
+
     def get_queryset(self):
         user = self.request.user
         if user.role == 'admin':
             return User.objects.all()
-        return User.objects.filter(id=user.id) 
+        # Los usuarios externos solo pueden ver y editar su propio perfil
+        return User.objects.filter(id=user.id)
