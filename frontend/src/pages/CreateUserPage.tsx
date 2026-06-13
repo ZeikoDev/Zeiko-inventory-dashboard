@@ -25,7 +25,7 @@ const CreateUserPage = () => {
             await createUser({ username, email, role, password });
             navigate('/users');
         } catch (err) {
-            setError('Error al crear el usuario');
+            setError(err instanceof Error ? err.message : 'Error al crear el usuario');
         } finally {
             setLoading(false);
         }

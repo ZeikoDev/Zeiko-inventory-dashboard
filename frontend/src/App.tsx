@@ -1,4 +1,4 @@
-import { ThemeProvider, CssBaseline, createTheme } from '@mui/material';
+import { ThemeProvider, CssBaseline } from '@mui/material';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
@@ -15,166 +15,24 @@ import UsersPage from './pages/UsersPage';
 import CreateUserPage from './pages/CreateUserPage';
 import EditUserPage from './pages/EditUserPage';
 import { getAuth } from './services/auth.service';
+import { theme } from './styles/theme';
 
-const theme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#00ff9d',
-      light: '#33ffb1',
-      dark: '#00cc7d',
-      contrastText: '#000',
-    },
-    secondary: {
-      main: '#ff00ff',
-      light: '#ff33ff',
-      dark: '#cc00cc',
-      contrastText: '#fff',
-    },
-    info: {
-      main: '#00ffff',
-      light: '#33ffff',
-      dark: '#00cccc',
-      contrastText: '#000',
-    },
-    success: {
-      main: '#00ff00',
-      light: '#33ff33',
-      dark: '#00cc00',
-      contrastText: '#000',
-    },
-    warning: {
-      main: '#ffff00',
-      light: '#ffff33',
-      dark: '#cccc00',
-      contrastText: '#000',
-    },
-    error: {
-      main: '#ff0000',
-      light: '#ff3333',
-      dark: '#cc0000',
-      contrastText: '#fff',
-    },
-    background: {
-      default: '#0a0a0a',
-      paper: '#1a1a1a',
-    },
-    text: {
-      primary: '#ffffff',
-      secondary: '#b3b3b3',
-    },
-  },
-  shape: {
-    borderRadius: 16,
-  },
-  typography: {
-    fontFamily: 'Inter, Roboto, Arial, sans-serif',
-    h3: {
-      fontWeight: 800,
-      letterSpacing: 2,
-      textShadow: '0 0 10px rgba(0, 255, 157, 0.5)',
-    },
-    h4: {
-      fontWeight: 700,
-      letterSpacing: 1.5,
-      textShadow: '0 0 8px rgba(0, 255, 157, 0.4)',
-    },
-    h5: {
-      fontWeight: 600,
-      letterSpacing: 1,
-      textShadow: '0 0 6px rgba(0, 255, 157, 0.3)',
-    },
-    h6: {
-      fontWeight: 600,
-      letterSpacing: 0.5,
-      textShadow: '0 0 4px rgba(0, 255, 157, 0.2)',
-    },
-  },
-  components: {
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundImage: 'none',
-          boxShadow: '0 0 20px rgba(0, 255, 157, 0.1)',
-          '&:hover': {
-            boxShadow: '0 0 30px rgba(0, 255, 157, 0.2)',
-          },
-        },
-      },
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          fontWeight: 600,
-          boxShadow: '0 0 15px rgba(0, 255, 157, 0.2)',
-          '&:hover': {
-            boxShadow: '0 0 25px rgba(0, 255, 157, 0.4)',
-          },
-        },
-        contained: {
-          '&.MuiButton-containedPrimary': {
-            background: 'linear-gradient(45deg, #00ff9d 30%, #00ffff 90%)',
-            '&:hover': {
-              background: 'linear-gradient(45deg, #00cc7d 30%, #00cccc 90%)',
-            },
-          },
-          '&.MuiButton-containedSecondary': {
-            background: 'linear-gradient(45deg, #ff00ff 30%, #ff33ff 90%)',
-            '&:hover': {
-              background: 'linear-gradient(45deg, #cc00cc 30%, #cc33cc 90%)',
-            },
-          },
-        },
-        outlined: {
-          borderWidth: 2,
-          '&:hover': {
-            borderWidth: 2,
-          },
-        },
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          background: 'rgba(26, 26, 26, 0.8)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(0, 255, 157, 0.1)',
-          '&:hover': {
-            border: '1px solid rgba(0, 255, 157, 0.2)',
-          },
-        },
-      },
-    },
-    MuiTableCell: {
-      styleOverrides: {
-        root: {
-          borderBottom: '1px solid rgba(0, 255, 157, 0.1)',
-        },
-        head: {
-          fontWeight: 700,
-          color: '#00ff9d',
-          textShadow: '0 0 5px rgba(0, 255, 157, 0.3)',
-        },
-      },
-    },
-    MuiDialog: {
-      styleOverrides: {
-        paper: {
-          background: 'rgba(26, 26, 26, 0.95)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(0, 255, 157, 0.2)',
-          boxShadow: '0 0 30px rgba(0, 255, 157, 0.2)',
-        },
-      },
-    },
-  },
-});
+function RequireAuth({ children }: { children: JSX.Element }) {
+  const auth = getAuth();
+  const location = useLocation();
+  if (!auth) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+  return children;
+}
 
 function RequireAdmin({ children }: { children: JSX.Element }) {
   const auth = getAuth();
   const location = useLocation();
-  if (!auth || auth.role !== 'admin') {
+  if (!auth) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+  if (auth.role !== 'admin') {
     return <Navigate to="/dashboard" state={{ from: location }} replace />;
   }
   return children;
@@ -187,8 +45,16 @@ function App() {
       <Router>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/companies" element={<CompaniesPage />} />
+          <Route path="/dashboard" element={
+            <RequireAuth>
+              <DashboardPage />
+            </RequireAuth>
+          } />
+          <Route path="/companies" element={
+            <RequireAuth>
+              <CompaniesPage />
+            </RequireAuth>
+          } />
           <Route path="/companies/create" element={
             <RequireAdmin>
               <CreateCompanyPage />
@@ -199,7 +65,11 @@ function App() {
               <EditCompanyPage />
             </RequireAdmin>
           } />
-          <Route path="/inventory" element={<InventoryPage />} />
+          <Route path="/inventory" element={
+            <RequireAuth>
+              <InventoryPage />
+            </RequireAuth>
+          } />
           <Route path="/inventory/create" element={
             <RequireAdmin>
               <CreateInventoryPage />
@@ -210,7 +80,11 @@ function App() {
               <EditInventoryPage />
             </RequireAdmin>
           } />
-          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/products" element={
+            <RequireAuth>
+              <ProductsPage />
+            </RequireAuth>
+          } />
           <Route path="/products/create" element={
             <RequireAdmin>
               <CreateProductPage />

@@ -21,10 +21,10 @@ export const Table = ({ columns, data, ...props }: TableProps) => {
             elevation={0}
             sx={{
                 borderRadius: 4,
-                background: 'rgba(26, 26, 26, 0.8)',
+                background: 'rgba(30, 41, 59, 0.8)',
                 backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(0, 255, 157, 0.1)',
-                boxShadow: '0 0 20px rgba(0, 255, 157, 0.1)',
+                border: '1px solid rgba(99, 102, 241, 0.1)',
+                boxShadow: '0 0 20px rgba(99, 102, 241, 0.1)',
                 overflow: 'hidden',
                 '& .MuiTable-root': {
                     borderCollapse: 'separate',
@@ -44,10 +44,10 @@ export const Table = ({ columns, data, ...props }: TableProps) => {
                                     color: 'primary.main',
                                     borderBottom: '2px solid',
                                     borderColor: 'primary.main',
-                                    backgroundColor: 'rgba(0, 255, 157, 0.05)',
+                                    backgroundColor: 'rgba(99, 102, 241, 0.05)',
                                     py: 2,
                                     px: 3,
-                                    textShadow: '0 0 5px rgba(0, 255, 157, 0.3)',
+                                    textShadow: '0 0 5px rgba(99, 102, 241, 0.3)',
                                     '&:first-of-type': {
                                         borderTopLeftRadius: 8,
                                     },
@@ -67,24 +67,24 @@ export const Table = ({ columns, data, ...props }: TableProps) => {
                             key={index}
                             sx={{
                                 '&:hover': {
-                                    backgroundColor: 'rgba(0, 255, 157, 0.05)',
+                                    backgroundColor: 'rgba(99, 102, 241, 0.05)',
                                     '& td': {
-                                        borderColor: 'rgba(0, 255, 157, 0.2)',
+                                        borderColor: 'rgba(99, 102, 241, 0.2)',
                                     },
                                 },
                                 transition: 'all 0.3s ease-in-out',
                                 '& td': {
-                                    borderBottom: '1px solid rgba(0, 255, 157, 0.1)',
+                                    borderBottom: '1px solid rgba(99, 102, 241, 0.1)',
                                     py: 2,
                                     px: 3,
                                     color: 'text.primary',
                                     '&:first-of-type': {
-                                        borderLeft: '1px solid rgba(0, 255, 157, 0.1)',
+                                        borderLeft: '1px solid rgba(99, 102, 241, 0.1)',
                                         borderTopLeftRadius: 8,
                                         borderBottomLeftRadius: 8,
                                     },
                                     '&:last-child': {
-                                        borderRight: '1px solid rgba(0, 255, 157, 0.1)',
+                                        borderRight: '1px solid rgba(99, 102, 241, 0.1)',
                                         borderTopRightRadius: 8,
                                         borderBottomRightRadius: 8,
                                     },

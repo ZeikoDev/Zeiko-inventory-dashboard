@@ -1,8 +1,6 @@
-import axios, { AxiosError } from 'axios';
-import { getAuth } from './auth.service';
+import { AxiosError } from 'axios';
+import { api, getApiErrorMessage } from './api';
 import { validateProduct } from '../utils/validations';
-
-const API_URL = 'http://localhost:8000/api/products/';
 
 export interface Product {
   id: number;
@@ -34,23 +32,29 @@ export class ProductError extends Error {
   }
 }
 
+const toProductError = (error: unknown, fallback: string): ProductError => {
+  if (error instanceof ProductError) {
+    return error;
+  }
+  if (error instanceof AxiosError) {
+    const status = error.response?.status;
+    if (status === 403) {
+      return new ProductError('No tienes permisos para realizar esta acción', 403);
+    }
+    if (status === 404) {
+      return new ProductError('Producto no encontrado', 404);
+    }
+    return new ProductError(getApiErrorMessage(error, fallback), status);
+  }
+  return new ProductError(fallback);
+};
+
 export const getProducts = async (): Promise<Product[]> => {
   try {
-    const auth = getAuth();
-    const response = await axios.get(API_URL, {
-      headers: {
-        Authorization: auth ? `Bearer ${auth.access}` : '',
-      },
-    });
+    const response = await api.get('/products/');
     return response.data;
   } catch (error) {
-    if (error instanceof AxiosError) {
-      if (error.response?.status === 401) {
-        throw new ProductError('No autorizado para ver los productos', 401);
-      }
-      throw new ProductError(error.response?.data?.detail || 'Error al obtener los productos', error.response?.status);
-    }
-    throw new ProductError('Error inesperado al obtener los productos');
+    throw toProductError(error, 'Error al obtener los productos');
   }
 };
 
@@ -59,27 +63,10 @@ export const createProduct = async (data: CreateProductData): Promise<Product> =
     // Validar datos antes de enviar al backend
     validateProduct(data);
 
-    const auth = getAuth();
-    const response = await axios.post(API_URL, data, {
-      headers: {
-        Authorization: auth ? `Bearer ${auth.access}` : '',
-      },
-    });
+    const response = await api.post('/products/', data);
     return response.data;
   } catch (error) {
-    if (error instanceof ProductError) {
-      throw error;
-    }
-    if (error instanceof AxiosError) {
-      if (error.response?.status === 400) {
-        throw new ProductError('Datos de producto inválidos', 400);
-      }
-      if (error.response?.status === 401) {
-        throw new ProductError('No autorizado para crear productos', 401);
-      }
-      throw new ProductError(error.response?.data?.detail || 'Error al crear el producto', error.response?.status);
-    }
-    throw new ProductError('Error inesperado al crear el producto');
+    throw toProductError(error, 'Error al crear el producto');
   }
 };
 
@@ -88,51 +75,17 @@ export const updateProduct = async (id: number, data: CreateProductData): Promis
     // Validar datos antes de enviar al backend
     validateProduct(data);
 
-    const auth = getAuth();
-    const response = await axios.put(`${API_URL}${id}/`, data, {
-      headers: {
-        Authorization: auth ? `Bearer ${auth.access}` : '',
-      },
-    });
+    const response = await api.put(`/products/${id}/`, data);
     return response.data;
   } catch (error) {
-    if (error instanceof ProductError) {
-      throw error;
-    }
-    if (error instanceof AxiosError) {
-      if (error.response?.status === 400) {
-        throw new ProductError('Datos de producto inválidos', 400);
-      }
-      if (error.response?.status === 401) {
-        throw new ProductError('No autorizado para actualizar productos', 401);
-      }
-      if (error.response?.status === 404) {
-        throw new ProductError('Producto no encontrado', 404);
-      }
-      throw new ProductError(error.response?.data?.detail || 'Error al actualizar el producto', error.response?.status);
-    }
-    throw new ProductError('Error inesperado al actualizar el producto');
+    throw toProductError(error, 'Error al actualizar el producto');
   }
 };
 
 export const deleteProduct = async (id: number): Promise<void> => {
   try {
-    const auth = getAuth();
-    await axios.delete(`${API_URL}${id}/`, {
-      headers: {
-        Authorization: auth ? `Bearer ${auth.access}` : '',
-      },
-    });
+    await api.delete(`/products/${id}/`);
   } catch (error) {
-    if (error instanceof AxiosError) {
-      if (error.response?.status === 401) {
-        throw new ProductError('No autorizado para eliminar productos', 401);
-      }
-      if (error.response?.status === 404) {
-        throw new ProductError('Producto no encontrado', 404);
-      }
-      throw new ProductError(error.response?.data?.detail || 'Error al eliminar el producto', error.response?.status);
-    }
-    throw new ProductError('Error inesperado al eliminar el producto');
+    throw toProductError(error, 'Error al eliminar el producto');
   }
-}; 
+};

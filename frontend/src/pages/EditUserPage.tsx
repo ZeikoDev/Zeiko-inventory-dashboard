@@ -47,7 +47,7 @@ const EditUserPage = () => {
             await updateUser(Number(id), { username, email, role });
             navigate('/users');
         } catch (err) {
-            setError('Error al actualizar el usuario');
+            setError(err instanceof Error ? err.message : 'Error al actualizar el usuario');
         } finally {
             setLoading(false);
         }
@@ -80,7 +80,7 @@ const EditUserPage = () => {
                     borderRadius: 2,
                     bgcolor: 'background.paper',
                     color: 'primary.main',
-                    boxShadow: '0 2px 8px 0 #00e1ff22',
+                    boxShadow: '0 2px 8px 0 #6366f122',
                     zIndex: 10,
                 }}
             >

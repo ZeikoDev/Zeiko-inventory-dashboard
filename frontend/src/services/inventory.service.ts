@@ -1,8 +1,6 @@
-import axios, { AxiosError } from 'axios';
-import { getAuth } from './auth.service';
+import { AxiosError } from 'axios';
+import { api, getApiErrorMessage } from './api';
 import { validateInventory } from '../utils/validations';
-
-const API_URL = 'http://localhost:8000/api/inventory/';
 
 export interface Inventory {
   id: number;
@@ -26,23 +24,29 @@ export class InventoryError extends Error {
   }
 }
 
+const toInventoryError = (error: unknown, fallback: string): InventoryError => {
+  if (error instanceof InventoryError) {
+    return error;
+  }
+  if (error instanceof AxiosError) {
+    const status = error.response?.status;
+    if (status === 403) {
+      return new InventoryError('No tienes permisos para realizar esta acción', 403);
+    }
+    if (status === 404) {
+      return new InventoryError('Registro de inventario no encontrado', 404);
+    }
+    return new InventoryError(getApiErrorMessage(error, fallback), status);
+  }
+  return new InventoryError(fallback);
+};
+
 export const getInventory = async (): Promise<Inventory[]> => {
   try {
-    const auth = getAuth();
-    const response = await axios.get(API_URL, {
-      headers: {
-        Authorization: auth ? `Bearer ${auth.access}` : '',
-      },
-    });
+    const response = await api.get('/inventory/');
     return response.data;
   } catch (error) {
-    if (error instanceof AxiosError) {
-      if (error.response?.status === 401) {
-        throw new InventoryError('No autorizado para ver el inventario', 401);
-      }
-      throw new InventoryError(error.response?.data?.detail || 'Error al obtener el inventario', error.response?.status);
-    }
-    throw new InventoryError('Error inesperado al obtener el inventario');
+    throw toInventoryError(error, 'Error al obtener el inventario');
   }
 };
 
@@ -51,27 +55,10 @@ export const createInventory = async (data: CreateInventoryData): Promise<Invent
     // Validar datos antes de enviar al backend
     validateInventory(data);
 
-    const auth = getAuth();
-    const response = await axios.post(API_URL, data, {
-      headers: {
-        Authorization: auth ? `Bearer ${auth.access}` : '',
-      },
-    });
+    const response = await api.post('/inventory/', data);
     return response.data;
   } catch (error) {
-    if (error instanceof InventoryError) {
-      throw error;
-    }
-    if (error instanceof AxiosError) {
-      if (error.response?.status === 400) {
-        throw new InventoryError('Datos de inventario inválidos', 400);
-      }
-      if (error.response?.status === 401) {
-        throw new InventoryError('No autorizado para crear registros de inventario', 401);
-      }
-      throw new InventoryError(error.response?.data?.detail || 'Error al crear el registro de inventario', error.response?.status);
-    }
-    throw new InventoryError('Error inesperado al crear el registro de inventario');
+    throw toInventoryError(error, 'Error al crear el registro de inventario');
   }
 };
 
@@ -80,51 +67,17 @@ export const updateInventory = async (id: number, data: CreateInventoryData): Pr
     // Validar datos antes de enviar al backend
     validateInventory(data);
 
-    const auth = getAuth();
-    const response = await axios.put(`${API_URL}${id}/`, data, {
-      headers: {
-        Authorization: auth ? `Bearer ${auth.access}` : '',
-      },
-    });
+    const response = await api.put(`/inventory/${id}/`, data);
     return response.data;
   } catch (error) {
-    if (error instanceof InventoryError) {
-      throw error;
-    }
-    if (error instanceof AxiosError) {
-      if (error.response?.status === 400) {
-        throw new InventoryError('Datos de inventario inválidos', 400);
-      }
-      if (error.response?.status === 401) {
-        throw new InventoryError('No autorizado para actualizar registros de inventario', 401);
-      }
-      if (error.response?.status === 404) {
-        throw new InventoryError('Registro de inventario no encontrado', 404);
-      }
-      throw new InventoryError(error.response?.data?.detail || 'Error al actualizar el registro de inventario', error.response?.status);
-    }
-    throw new InventoryError('Error inesperado al actualizar el registro de inventario');
+    throw toInventoryError(error, 'Error al actualizar el registro de inventario');
   }
 };
 
 export const deleteInventory = async (id: number): Promise<void> => {
   try {
-    const auth = getAuth();
-    await axios.delete(`${API_URL}${id}/`, {
-      headers: {
-        Authorization: auth ? `Bearer ${auth.access}` : '',
-      },
-    });
+    await api.delete(`/inventory/${id}/`);
   } catch (error) {
-    if (error instanceof AxiosError) {
-      if (error.response?.status === 401) {
-        throw new InventoryError('No autorizado para eliminar registros de inventario', 401);
-      }
-      if (error.response?.status === 404) {
-        throw new InventoryError('Registro de inventario no encontrado', 404);
-      }
-      throw new InventoryError(error.response?.data?.detail || 'Error al eliminar el registro de inventario', error.response?.status);
-    }
-    throw new InventoryError('Error inesperado al eliminar el registro de inventario');
+    throw toInventoryError(error, 'Error al eliminar el registro de inventario');
   }
-}; 
+};

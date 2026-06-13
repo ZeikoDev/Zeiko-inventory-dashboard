@@ -1,6 +1,7 @@
 # Entornos y archivos de configuración privada
 .env
 .env.*
+!.env.example
 .DS_Store
 
 # Configuración de editores

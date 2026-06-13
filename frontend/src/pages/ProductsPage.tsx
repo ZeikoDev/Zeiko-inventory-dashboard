@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import axios from 'axios';
+import { api, getApiErrorMessage } from '../services/api';
 import { getCompanies, type Company } from '../services/companies.service';
 import { getAuth } from '../services/auth.service';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -89,20 +89,12 @@ const ProductsPage = () => {
     setRecommendation('');
     setRecommendationError('');
     try {
-      const response = await axios.get('http://localhost:8000/api/products/recommendation/', {
-        headers: {
-          Authorization: auth ? `Bearer ${auth.access}` : '',
-        },
+      const response = await api.get('/products/recommendation/', {
         params: { description: companyDescription }
       });
       setRecommendation(response.data.recommendation);
-    } catch (err: any) {
-      setRecommendationError(
-        err?.response?.data?.error ||
-        (err?.response?.data && JSON.stringify(err.response.data)) ||
-        err.message ||
-        'No se pudo obtener la recomendación.'
-      );
+    } catch (err) {
+      setRecommendationError(getApiErrorMessage(err, 'No se pudo obtener la recomendación.'));
     }
   };
 
@@ -174,7 +166,7 @@ const ProductsPage = () => {
           borderRadius: 2,
           bgcolor: 'background.paper',
           color: 'primary.main',
-          boxShadow: '0 2px 8px 0 #00e1ff22',
+          boxShadow: '0 2px 8px 0 #6366f122',
           zIndex: 10,
         }}
       >

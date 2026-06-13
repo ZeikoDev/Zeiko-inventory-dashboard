@@ -1,8 +1,6 @@
-import axios, { AxiosError } from 'axios';
-import { getAuth } from './auth.service';
+import { AxiosError } from 'axios';
+import { api, getApiErrorMessage } from './api';
 import { validateCompany } from '../utils/validations';
-
-const API_URL = 'http://localhost:8000/api/companies/';
 
 export interface Company {
   id: number;
@@ -29,23 +27,29 @@ export class CompanyError extends Error {
   }
 }
 
+const toCompanyError = (error: unknown, fallback: string): CompanyError => {
+  if (error instanceof CompanyError) {
+    return error;
+  }
+  if (error instanceof AxiosError) {
+    const status = error.response?.status;
+    if (status === 403) {
+      return new CompanyError('No tienes permisos para realizar esta acción', 403);
+    }
+    if (status === 404) {
+      return new CompanyError('Empresa no encontrada', 404);
+    }
+    return new CompanyError(getApiErrorMessage(error, fallback), status);
+  }
+  return new CompanyError(fallback);
+};
+
 export const getCompanies = async (): Promise<Company[]> => {
   try {
-    const auth = getAuth();
-    const response = await axios.get(API_URL, {
-      headers: {
-        Authorization: auth ? `Bearer ${auth.access}` : '',
-      },
-    });
+    const response = await api.get('/companies/');
     return response.data;
   } catch (error) {
-    if (error instanceof AxiosError) {
-      if (error.response?.status === 401) {
-        throw new CompanyError('No autorizado para ver las empresas', 401);
-      }
-      throw new CompanyError(error.response?.data?.detail || 'Error al obtener las empresas', error.response?.status);
-    }
-    throw new CompanyError('Error inesperado al obtener las empresas');
+    throw toCompanyError(error, 'Error al obtener las empresas');
   }
 };
 
@@ -54,27 +58,10 @@ export const createCompany = async (data: CreateCompanyData): Promise<Company> =
     // Validar datos antes de enviar al backend
     validateCompany(data);
 
-    const auth = getAuth();
-    const response = await axios.post(API_URL, data, {
-      headers: {
-        Authorization: auth ? `Bearer ${auth.access}` : '',
-      },
-    });
+    const response = await api.post('/companies/', data);
     return response.data;
   } catch (error) {
-    if (error instanceof CompanyError) {
-      throw error;
-    }
-    if (error instanceof AxiosError) {
-      if (error.response?.status === 400) {
-        throw new CompanyError('Datos de empresa inválidos', 400);
-      }
-      if (error.response?.status === 401) {
-        throw new CompanyError('No autorizado para crear empresas', 401);
-      }
-      throw new CompanyError(error.response?.data?.detail || 'Error al crear la empresa', error.response?.status);
-    }
-    throw new CompanyError('Error inesperado al crear la empresa');
+    throw toCompanyError(error, 'Error al crear la empresa');
   }
 };
 
@@ -83,51 +70,17 @@ export const updateCompany = async (id: number, data: CreateCompanyData): Promis
     // Validar datos antes de enviar al backend
     validateCompany(data);
 
-    const auth = getAuth();
-    const response = await axios.put(`${API_URL}${id}/`, data, {
-      headers: {
-        Authorization: auth ? `Bearer ${auth.access}` : '',
-      },
-    });
+    const response = await api.put(`/companies/${id}/`, data);
     return response.data;
   } catch (error) {
-    if (error instanceof CompanyError) {
-      throw error;
-    }
-    if (error instanceof AxiosError) {
-      if (error.response?.status === 400) {
-        throw new CompanyError('Datos de empresa inválidos', 400);
-      }
-      if (error.response?.status === 401) {
-        throw new CompanyError('No autorizado para actualizar empresas', 401);
-      }
-      if (error.response?.status === 404) {
-        throw new CompanyError('Empresa no encontrada', 404);
-      }
-      throw new CompanyError(error.response?.data?.detail || 'Error al actualizar la empresa', error.response?.status);
-    }
-    throw new CompanyError('Error inesperado al actualizar la empresa');
+    throw toCompanyError(error, 'Error al actualizar la empresa');
   }
 };
 
 export const deleteCompany = async (id: number): Promise<void> => {
   try {
-    const auth = getAuth();
-    await axios.delete(`${API_URL}${id}/`, {
-      headers: {
-        Authorization: auth ? `Bearer ${auth.access}` : '',
-      },
-    });
+    await api.delete(`/companies/${id}/`);
   } catch (error) {
-    if (error instanceof AxiosError) {
-      if (error.response?.status === 401) {
-        throw new CompanyError('No autorizado para eliminar empresas', 401);
-      }
-      if (error.response?.status === 404) {
-        throw new CompanyError('Empresa no encontrada', 404);
-      }
-      throw new CompanyError(error.response?.data?.detail || 'Error al eliminar la empresa', error.response?.status);
-    }
-    throw new CompanyError('Error inesperado al eliminar la empresa');
+    throw toCompanyError(error, 'Error al eliminar la empresa');
   }
-}; 
+};
