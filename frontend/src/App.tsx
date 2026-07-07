@@ -1,4 +1,3 @@
-import { ThemeProvider, CssBaseline } from '@mui/material';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
@@ -15,7 +14,7 @@ import UsersPage from './pages/UsersPage';
 import CreateUserPage from './pages/CreateUserPage';
 import EditUserPage from './pages/EditUserPage';
 import { getAuth } from './services/auth.service';
-import { theme } from './styles/theme';
+import { ColorModeProvider } from './context/ColorModeContext';
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const auth = getAuth();
@@ -40,8 +39,7 @@ function RequireAdmin({ children }: { children: JSX.Element }) {
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <ColorModeProvider>
       <Router>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -105,7 +103,7 @@ function App() {
           <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
       </Router>
-    </ThemeProvider>
+    </ColorModeProvider>
   );
 }
 

@@ -1,294 +1,116 @@
-import { Box, Typography, Grid, Paper, Avatar, Stack, Button } from '@mui/material';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import Inventory2Icon from '@mui/icons-material/Inventory2';
-import BusinessIcon from '@mui/icons-material/Business';
-import PeopleIcon from '@mui/icons-material/People';
-import LogoutIcon from '@mui/icons-material/Logout';
+import { Box, Typography, Grid, Paper, Stack, alpha } from '@mui/material';
+import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import WarehouseOutlinedIcon from '@mui/icons-material/WarehouseOutlined';
+import StorefrontOutlinedIcon from '@mui/icons-material/StorefrontOutlined';
+import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useNavigate } from 'react-router-dom';
-import { getAuth, logout } from '../services/auth.service';
+import { getAuth } from '../services/auth.service';
+import { AppLayout } from '../components/layout/AppLayout';
+
+interface Module {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  path: string;
+  adminOnly: boolean;
+}
+
+const modules: Module[] = [
+  {
+    title: 'Productos',
+    description: 'Catálogo, precios y características de tus productos.',
+    icon: <Inventory2OutlinedIcon />,
+    path: '/products',
+    adminOnly: true,
+  },
+  {
+    title: 'Inventario',
+    description: 'Stock disponible y movimientos por empresa.',
+    icon: <WarehouseOutlinedIcon />,
+    path: '/inventory',
+    adminOnly: true,
+  },
+  {
+    title: 'Empresas',
+    description: 'Empresas asociadas a tu operación.',
+    icon: <StorefrontOutlinedIcon />,
+    path: '/companies',
+    adminOnly: false,
+  },
+  {
+    title: 'Usuarios',
+    description: 'Cuentas y permisos del equipo.',
+    icon: <GroupOutlinedIcon />,
+    path: '/users',
+    adminOnly: true,
+  },
+];
 
 const DashboardPage = () => {
   const navigate = useNavigate();
   const auth = getAuth();
   const userRole = auth?.role;
   const username = auth?.username || 'Usuario';
-  const role = userRole === 'admin' ? 'Administrador' : userRole === 'external' ? 'Externo' : 'Desconocido';
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
-  const cardStyles = {
-    p: 4,
-    borderRadius: 4,
-    minHeight: 320,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 2,
-    background: 'rgba(30, 41, 59, 0.8)',
-    backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(99, 102, 241, 0.1)',
-    boxShadow: '0 0 20px rgba(99, 102, 241, 0.1)',
-    transition: 'all 0.3s ease-in-out',
-    position: 'relative',
-    overflow: 'hidden',
-    '&::before': {
-      content: '""',
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'linear-gradient(45deg, rgba(99, 102, 241, 0.1), rgba(34, 211, 238, 0.1))',
-      opacity: 0,
-      transition: 'opacity 0.3s ease-in-out',
-      zIndex: 0,
-    },
-    '&:hover': {
-      transform: 'translateY(-4px)',
-      boxShadow: '0 0 30px rgba(99, 102, 241, 0.2)',
-      border: '1px solid rgba(99, 102, 241, 0.2)',
-      '&::before': {
-        opacity: 1,
-      },
-      '& .MuiAvatar-root': {
-        transform: 'scale(1.1)',
-        boxShadow: '0 0 20px rgba(99, 102, 241, 0.4)',
-      },
-    },
-  };
-
-  const avatarStyles = {
-    width: 56,
-    height: 56,
-    transition: 'all 0.3s ease-in-out',
-    boxShadow: '0 0 15px rgba(99, 102, 241, 0.2)',
-  };
+  const visibleModules = modules.filter((m) => !m.adminOnly || userRole === 'admin');
 
   return (
-    <Box sx={{
-      minHeight: '100vh',
-      bgcolor: 'background.default',
-      px: 0,
-      py: 6,
-      width: '100vw',
-      maxWidth: '100vw',
-      background: 'radial-gradient(circle at top right, rgba(99, 102, 241, 0.1), transparent 50%), radial-gradient(circle at bottom left, rgba(34, 211, 238, 0.1), transparent 50%)',
-      position: 'relative',
-      overflowX: 'hidden',
-    }}>
-      {/* Logout Button */}
-      <Button
-        variant="outlined"
-        color="error"
-        startIcon={<LogoutIcon />}
-        onClick={handleLogout}
-        sx={{
-          position: 'absolute',
-          top: 24,
-          right: { xs: 24, md: 48, lg: 72, xl: 96 },
-          fontWeight: 600,
-          borderRadius: 2,
-          borderWidth: 2,
-          px: 3,
-          py: 1,
-          '&:hover': {
-            borderWidth: 2,
-            boxShadow: '0 0 20px rgba(248, 113, 113, 0.4)',
-            backgroundColor: 'rgba(248, 113, 113, 0.1)',
-          },
-        }}
-      >
-        Cerrar Sesión
-      </Button>
-
-      {/* User Info Section */}
-      <Stack direction="row" spacing={2} mb={6} alignItems="center">
-        <Avatar
-          sx={{
-            width: 48,
-            height: 48,
-            bgcolor: 'primary.main',
-            fontSize: 24,
-            boxShadow: '0 0 15px rgba(99, 102, 241, 0.3)',
-          }}
-        >
-          {username.charAt(0).toUpperCase()}
-        </Avatar>
-        <Box>
-          <Typography variant="h6" fontWeight={500} color="primary.main" sx={{ textShadow: '0 0 10px rgba(99, 102, 241, 0.3)' }}>
-            {username}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Rol: {role}
-          </Typography>
-        </Box>
-      </Stack>
-
-      <Typography
-        variant="h3"
-        fontWeight={700}
-        mb={4}
-        color="primary.main"
-        letterSpacing={2}
-        sx={{
-          textShadow: '0 0 20px rgba(99, 102, 241, 0.5)',
-          background: 'linear-gradient(45deg, #6366f1, #22d3ee)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          textAlign: 'center',
-        }}
-      >
-        Bienvenido a Zeiko Dashboard
-      </Typography>
-
-      <Grid
-        container
-        spacing={4}
-        sx={{
-          width: '100vw',
-          margin: 0,
-        }}
-      >
-        {/* Fallback para evitar grid roto */}
-        {(!userRole || userRole === 'admin' || userRole === 'external') ? null : (
-          <Grid item xs={12}>
-            <Paper sx={{ ...cardStyles, width: '100%' }}>
-              <Typography variant="h6">Cargando...</Typography>
-            </Paper>
-          </Grid>
-        )}
-        {userRole === 'admin' && (
-          <Grid item xs={12} sm={6} md={3}>
-            <Paper sx={{ ...cardStyles, width: '100%' }}>
-              <Avatar sx={{ ...avatarStyles, bgcolor: 'primary.main' }}>
-                <AccountBalanceWalletIcon fontSize="large" />
-              </Avatar>
-              <Typography variant="h5" fontWeight={600} letterSpacing={1} sx={{ color: 'primary.main', textShadow: '0 0 10px rgba(99, 102, 241, 0.3)' }}>
-                Productos
-              </Typography>
-              <Typography variant="body1" color="grey.300">
-                Gestiona y visualiza todos los productos registrados.
-              </Typography>
-              <Button
-                variant="outlined"
-                color="primary"
-                sx={{
-                  mt: 2,
-                  borderRadius: 2,
-                  fontWeight: 600,
-                  borderWidth: 2,
-                  '&:hover': {
-                    borderWidth: 2,
-                    boxShadow: '0 0 20px rgba(99, 102, 241, 0.4)',
-                  },
-                }}
-                onClick={() => navigate('/products')}
-              >
-                Ver productos
-              </Button>
-            </Paper>
-          </Grid>
-        )}
-        {userRole === 'admin' && (
-          <Grid item xs={12} sm={6} md={3}>
-            <Paper sx={{ ...cardStyles, width: '100%' }}>
-              <Avatar sx={{ ...avatarStyles, bgcolor: 'secondary.main' }}>
-                <Inventory2Icon fontSize="large" />
-              </Avatar>
-              <Typography variant="h5" fontWeight={600} letterSpacing={1} sx={{ color: 'secondary.main', textShadow: '0 0 10px rgba(168, 85, 247, 0.3)' }}>
-                Inventario
-              </Typography>
-              <Typography variant="body1" color="grey.300">
-                Consulta el stock y movimientos de inventario.
-              </Typography>
-              <Button
-                variant="outlined"
-                color="secondary"
-                sx={{
-                  mt: 2,
-                  borderRadius: 2,
-                  fontWeight: 600,
-                  borderWidth: 2,
-                  '&:hover': {
-                    borderWidth: 2,
-                    boxShadow: '0 0 20px rgba(168, 85, 247, 0.4)',
-                  },
-                }}
-                onClick={() => navigate('/inventory')}
-              >
-                Ver inventario
-              </Button>
-            </Paper>
-          </Grid>
-        )}
-        <Grid item xs={12} sm={6} md={3}>
-          <Paper sx={{ ...cardStyles, width: '100%' }}>
-            <Avatar sx={{ ...avatarStyles, bgcolor: 'info.main' }}>
-              <BusinessIcon fontSize="large" />
-            </Avatar>
-            <Typography variant="h5" fontWeight={600} letterSpacing={1} sx={{ color: 'info.main', textShadow: '0 0 10px rgba(34, 211, 238, 0.3)' }}>
-              Empresas
-            </Typography>
-            <Typography variant="body1" color="grey.300">
-              Mira las empresas asociadas.
-            </Typography>
-            <Button
-              variant="outlined"
-              color="info"
+    <AppLayout
+      title={`Hola, ${username}`}
+      subtitle="Bienvenido de nuevo. Esto es lo que puedes gestionar hoy."
+    >
+      <Grid container spacing={2.5}>
+        {visibleModules.map((module) => (
+          <Grid item xs={12} sm={6} md={visibleModules.length > 2 ? 3 : 6} key={module.path}>
+            <Paper
+              onClick={() => navigate(module.path)}
               sx={{
-                mt: 2,
-                borderRadius: 2,
-                fontWeight: 600,
-                borderWidth: 2,
+                p: 3,
+                height: '100%',
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1.5,
+                transition: 'border-color 0.15s ease, background-color 0.15s ease',
                 '&:hover': {
-                  borderWidth: 2,
-                  boxShadow: '0 0 20px rgba(34, 211, 238, 0.4)',
+                  borderColor: 'primary.main',
+                  '& .module-arrow': {
+                    color: 'primary.main',
+                  },
                 },
               }}
-              onClick={() => navigate('/companies')}
             >
-              Ver empresas
-            </Button>
-          </Paper>
-        </Grid>
-        {userRole === 'admin' && (
-          <Grid item xs={12} sm={6} md={3}>
-            <Paper sx={{ ...cardStyles, width: '100%' }}>
-              <Avatar sx={{ ...avatarStyles, bgcolor: 'success.main' }}>
-                <PeopleIcon fontSize="large" />
-              </Avatar>
-              <Typography variant="h5" fontWeight={600} letterSpacing={1} sx={{ color: 'success.main', textShadow: '0 0 10px rgba(52, 211, 153, 0.3)' }}>
-                Usuarios
-              </Typography>
-              <Typography variant="body1" color="grey.300">
-                Administra los usuarios del sistema.
-              </Typography>
-              <Button
-                variant="outlined"
-                color="success"
-                sx={{
-                  mt: 2,
-                  borderRadius: 2,
-                  fontWeight: 600,
-                  borderWidth: 2,
-                  '&:hover': {
-                    borderWidth: 2,
-                    boxShadow: '0 0 20px rgba(52, 211, 153, 0.4)',
-                  },
-                }}
-                onClick={() => navigate('/users')}
-              >
-                Ver usuarios
-              </Button>
+              <Stack direction="row" alignItems="center" justifyContent="space-between">
+                <Box
+                  sx={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: 1.5,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.12),
+                    color: 'primary.main',
+                  }}
+                >
+                  {module.icon}
+                </Box>
+                <ChevronRightIcon className="module-arrow" sx={{ color: 'text.disabled', transition: 'color 0.15s ease' }} />
+              </Stack>
+              <Box>
+                <Typography variant="h6" fontSize="1.05rem" mb={0.5}>
+                  {module.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {module.description}
+                </Typography>
+              </Box>
             </Paper>
           </Grid>
-        )}
+        ))}
       </Grid>
-    </Box>
+    </AppLayout>
   );
 };
 

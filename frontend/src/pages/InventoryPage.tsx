@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Box, Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, CircularProgress } from '@mui/material';
+import { Box, Typography, Button, IconButton, CircularProgress } from '@mui/material';
 import { getInventory } from '../services/inventory.service';
 import type { Inventory } from '../services/inventory.service';
 import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -12,11 +13,12 @@ import DialogActions from '@mui/material/DialogActions';
 import Alert from '@mui/material/Alert';
 import { deleteInventory } from '../services/inventory.service';
 import { getAuth } from '../services/auth.service';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import PictureAsPdfOutlinedIcon from '@mui/icons-material/PictureAsPdfOutlined';
 import { api, getApiErrorMessage } from '../services/api';
 import { getProducts, type Product } from '../services/products.service';
 import { getCompanies, type Company } from '../services/companies.service';
+import { Table } from '../components/organisms/Table';
+import { AppLayout } from '../components/layout/AppLayout';
 
 const InventoryPage = () => {
   const [inventory, setInventory] = useState<Inventory[]>([]);
@@ -103,114 +105,92 @@ const InventoryPage = () => {
     }
   };
 
-  return (
-    <Box sx={{ minHeight: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default', px: 2, py: 6, position: 'relative' }}>
-      <Button
-        startIcon={<ArrowBackIcon />}
-        onClick={() => navigate('/dashboard')}
-        sx={{
-          position: 'absolute',
-          top: 24,
-          left: 24,
-          fontWeight: 600,
-          borderRadius: 2,
-          bgcolor: 'background.paper',
-          color: 'primary.main',
-          boxShadow: '0 2px 8px 0 #6366f122',
-          zIndex: 10,
-        }}
-      >
-        Volver al Dashboard
-      </Button>
-      <Box sx={{ width: '100%', maxWidth: 1200, mb: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-          <Typography variant="h5" color="primary.main" fontWeight={600} letterSpacing={1}>
-            Inventario
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <Button
-              variant="outlined"
-              color="info"
-              startIcon={<PictureAsPdfIcon />}
-              onClick={handleSendPdf}
-              sx={{ fontWeight: 600, borderRadius: 2, px: 3, py: 1 }}
-            >
-              Descargar reporte PDF
-            </Button>
-            {userRole === 'admin' && (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => navigate('/inventory/create')}
-                sx={{
-                  fontWeight: 600,
-                  borderRadius: 2,
-                  px: 3,
-                  py: 1,
-                  boxShadow: '0 0 16px 0 #6366f155',
-                }}
-              >
-                Agregar al Inventario
-              </Button>
-            )}
-          </Box>
+  const columns = [
+    {
+      id: 'product',
+      label: 'Producto',
+      render: (value: number) => getProductName(value)
+    },
+    {
+      id: 'company',
+      label: 'Empresa',
+      render: (value: number) => getCompanyName(value)
+    },
+    { id: 'quantity', label: 'Cantidad' },
+    {
+      id: 'updated_at',
+      label: 'Última actualización',
+      render: (value: string) => new Date(value).toLocaleDateString()
+    },
+    ...(userRole === 'admin' ? [{
+      id: 'actions',
+      label: 'Acciones',
+      render: (_: unknown, row: Inventory) => (
+        <Box sx={{ whiteSpace: 'nowrap' }}>
+          <IconButton
+            size="small"
+            color="primary"
+            onClick={() => navigate(`/inventory/edit/${row.id}`)}
+            sx={{ mr: 0.5 }}
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            size="small"
+            color="error"
+            onClick={() => handleDeleteClick(row)}
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
         </Box>
+      )
+    }] : [])
+  ];
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
-          </Alert>
-        )}
-
-        <TableContainer component={Paper} sx={{ bgcolor: 'background.paper' }}>
-          {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-              <CircularProgress color="primary" />
-            </Box>
-          ) : (
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ color: 'primary.main', fontWeight: 700 }}>Producto</TableCell>
-                  <TableCell sx={{ color: 'primary.main', fontWeight: 700 }}>Empresa</TableCell>
-                  <TableCell sx={{ color: 'primary.main', fontWeight: 700 }}>Cantidad</TableCell>
-                  <TableCell sx={{ color: 'primary.main', fontWeight: 700 }}>Última actualización</TableCell>
-                  {userRole === 'admin' && <TableCell sx={{ color: 'primary.main', fontWeight: 700 }}>Acciones</TableCell>}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {inventory.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell>{getProductName(item.product)}</TableCell>
-                    <TableCell>{getCompanyName(item.company)}</TableCell>
-                    <TableCell>{item.quantity}</TableCell>
-                    <TableCell>{new Date(item.updated_at).toLocaleDateString()}</TableCell>
-                    {userRole === 'admin' && (
-                      <TableCell>
-                        <Button size="small" color="primary" onClick={() => navigate(`/inventory/edit/${item.id}`)} sx={{ minWidth: 0, mr: 1 }}>
-                          <EditIcon />
-                        </Button>
-                        <Button size="small" color="error" onClick={() => handleDeleteClick(item)} sx={{ minWidth: 0 }}>
-                          <DeleteIcon />
-                        </Button>
-                      </TableCell>
-                    )}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+  return (
+    <AppLayout
+      title="Inventario"
+      subtitle="Stock disponible por producto y empresa"
+      backTo="/dashboard"
+      backLabel="Volver al dashboard"
+      actions={
+        <>
+          <Button
+            variant="outlined"
+            startIcon={<PictureAsPdfOutlinedIcon />}
+            onClick={handleSendPdf}
+          >
+            Descargar reporte PDF
+          </Button>
+          {userRole === 'admin' && (
+            <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/inventory/create')}>
+              Agregar al inventario
+            </Button>
           )}
-        </TableContainer>
-      </Box>
+        </>
+      }
+    >
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
+
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 6 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Table columns={columns} data={inventory} />
+      )}
 
       {userRole === 'admin' && (
         <Dialog
           open={deleteDialogOpen}
           onClose={() => setDeleteDialogOpen(false)}
-          PaperProps={{ sx: { bgcolor: 'background.paper', borderRadius: 2 } }}
         >
-          <DialogTitle sx={{ color: 'primary.main', fontWeight: 600 }}>
-            Confirmar Eliminación
+          <DialogTitle>
+            Confirmar eliminación
           </DialogTitle>
           <DialogContent>
             <Typography>
@@ -219,10 +199,10 @@ const InventoryPage = () => {
             </Typography>
           </DialogContent>
           <DialogActions sx={{ p: 2, pt: 0 }}>
-            <Button onClick={() => setDeleteDialogOpen(false)} sx={{ fontWeight: 600 }}>
+            <Button onClick={() => setDeleteDialogOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleDeleteConfirm} color="error" variant="contained" disabled={loading} sx={{ fontWeight: 600 }}>
+            <Button onClick={handleDeleteConfirm} color="error" variant="contained" disabled={loading}>
               {loading ? 'Eliminando...' : 'Eliminar'}
             </Button>
           </DialogActions>
@@ -240,11 +220,11 @@ const InventoryPage = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setPdfDialogOpen(false)} color="primary">Cerrar</Button>
+          <Button onClick={() => setPdfDialogOpen(false)}>Cerrar</Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </AppLayout>
   );
 };
 
-export default InventoryPage; 
+export default InventoryPage;

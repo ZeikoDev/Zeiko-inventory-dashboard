@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Box, Paper, Typography, TextField, Button, Alert, MenuItem } from '@mui/material';
+import { Box, Paper, Typography, TextField, Button, Alert, MenuItem, Stack } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { createProduct, type CreateProductData } from '../services/products.service';
 import { getCompanies } from '../services/companies.service';
 import type { Company } from '../services/companies.service';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { AppLayout } from '../components/layout/AppLayout';
 
 const CreateProductPage = () => {
   const [formData, setFormData] = useState<CreateProductData>({
@@ -56,56 +56,13 @@ const CreateProductPage = () => {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        width: '100vw',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        bgcolor: 'background.default',
-        px: 2,
-        py: 6,
-        position: 'relative',
-      }}
-    >
-      <Button
-        startIcon={<ArrowBackIcon />}
-        onClick={() => navigate('/dashboard')}
-        sx={{
-          position: 'absolute',
-          top: 24,
-          left: 24,
-          fontWeight: 600,
-          borderRadius: 2,
-          bgcolor: 'background.paper',
-          color: 'primary.main',
-          boxShadow: '0 2px 8px 0 #6366f122',
-          zIndex: 10,
-        }}
-      >
-        Volver al Dashboard
-      </Button>
-      <Paper
-        elevation={8}
-        sx={{
-          p: { xs: 3, sm: 6 },
-          borderRadius: 4,
-          maxWidth: 600,
-          width: '100%',
-          bgcolor: 'background.paper',
-          boxShadow: '0 8px 32px 0 rgba(99,102,241,0.15)',
-        }}
-      >
-        <Typography
-          variant="h4"
-          align="center"
-          color="primary.main"
-          fontWeight={700}
-          letterSpacing={1}
-          mb={4}
-        >
-          Crear Nuevo Producto
+    <AppLayout backTo="/products" backLabel="Volver a productos" maxWidth="sm">
+      <Paper sx={{ p: { xs: 3, sm: 4 } }}>
+        <Typography variant="h5" component="h1" mb={0.5}>
+          Crear producto
+        </Typography>
+        <Typography variant="body2" color="text.secondary" mb={3}>
+          Registra un nuevo producto en el catálogo.
         </Typography>
 
         {error && (
@@ -114,135 +71,99 @@ const CreateProductPage = () => {
           </Alert>
         )}
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <TextField
-            label="Código"
-            name="code"
-            variant="outlined"
-            value={formData.code}
-            onChange={handleChange}
-            fullWidth
-            required
-            sx={{ input: { color: 'white' } }}
-          />
+        <Box component="form" onSubmit={handleSubmit}>
+          <Stack spacing={2.5}>
+            <TextField
+              label="Código"
+              name="code"
+              value={formData.code}
+              onChange={handleChange}
+              fullWidth
+              required
+            />
 
-          <TextField
-            label="Nombre"
-            name="name"
-            variant="outlined"
-            value={formData.name}
-            onChange={handleChange}
-            fullWidth
-            required
-            sx={{ input: { color: 'white' } }}
-          />
+            <TextField
+              label="Nombre"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              fullWidth
+              required
+            />
 
-          <TextField
-            label="Características"
-            name="characteristics"
-            variant="outlined"
-            value={formData.characteristics}
-            onChange={handleChange}
-            fullWidth
-            required
-            multiline
-            rows={3}
-            sx={{ input: { color: 'white' } }}
-          />
+            <TextField
+              label="Características"
+              name="characteristics"
+              value={formData.characteristics}
+              onChange={handleChange}
+              fullWidth
+              required
+              multiline
+              rows={3}
+            />
 
-          <TextField
-            label="Precio USD"
-            name="price_usd"
-            type="number"
-            variant="outlined"
-            value={formData.price_usd}
-            onChange={handleChange}
-            fullWidth
-            required
-            inputProps={{ min: 0, step: 0.01 }}
-            sx={{ input: { color: 'white' } }}
-          />
+            <TextField
+              label="Precio USD"
+              name="price_usd"
+              type="number"
+              value={formData.price_usd}
+              onChange={handleChange}
+              fullWidth
+              required
+              inputProps={{ min: 0, step: 0.01 }}
+            />
 
-          <TextField
-            label="Precio EUR"
-            name="price_eur"
-            type="number"
-            variant="outlined"
-            value={formData.price_eur}
-            onChange={handleChange}
-            fullWidth
-            required
-            inputProps={{ min: 0, step: 0.01 }}
-            sx={{ input: { color: 'white' } }}
-          />
+            <TextField
+              label="Precio EUR"
+              name="price_eur"
+              type="number"
+              value={formData.price_eur}
+              onChange={handleChange}
+              fullWidth
+              required
+              inputProps={{ min: 0, step: 0.01 }}
+            />
 
-          <TextField
-            label="Precio COP"
-            name="price_cop"
-            type="number"
-            variant="outlined"
-            value={formData.price_cop}
-            onChange={handleChange}
-            fullWidth
-            required
-            inputProps={{ min: 0, step: 0.01 }}
-            sx={{ input: { color: 'white' } }}
-          />
+            <TextField
+              label="Precio COP"
+              name="price_cop"
+              type="number"
+              value={formData.price_cop}
+              onChange={handleChange}
+              fullWidth
+              required
+              inputProps={{ min: 0, step: 0.01 }}
+            />
 
-          <TextField
-            select
-            label="Empresa"
-            name="company"
-            variant="outlined"
-            value={formData.company}
-            onChange={handleChange}
-            fullWidth
-            required
-            sx={{ input: { color: 'white' } }}
-          >
-            {companies.map((company) => (
-              <MenuItem key={company.id} value={company.id}>
-                {company.name}
-              </MenuItem>
-            ))}
-          </TextField>
-
-          <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => navigate('/products')}
-              sx={{
-                flex: 1,
-                fontWeight: 600,
-                borderRadius: 2,
-                py: 1.2,
-              }}
+            <TextField
+              select
+              label="Empresa"
+              name="company"
+              value={formData.company}
+              onChange={handleChange}
+              fullWidth
+              required
             >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              sx={{
-                flex: 1,
-                fontWeight: 700,
-                borderRadius: 2,
-                py: 1.2,
-                fontSize: '1.1rem',
-                letterSpacing: 1,
-                boxShadow: '0 0 16px 0 #6366f155',
-              }}
-              disabled={loading}
-            >
-              {loading ? 'Creando...' : 'Crear Producto'}
-            </Button>
-          </Box>
+              {companies.map((company) => (
+                <MenuItem key={company.id} value={company.id}>
+                  {company.name}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            <Stack direction="row" spacing={2} justifyContent="flex-end" mt={1}>
+              <Button variant="outlined" onClick={() => navigate('/products')}>
+                Cancelar
+              </Button>
+              <Button type="submit" variant="contained" disabled={loading}>
+                {loading ? 'Creando...' : 'Crear producto'}
+              </Button>
+            </Stack>
+          </Stack>
         </Box>
       </Paper>
-    </Box>
+    </AppLayout>
   );
 };
 
-export default CreateProductPage; 
+export default CreateProductPage;

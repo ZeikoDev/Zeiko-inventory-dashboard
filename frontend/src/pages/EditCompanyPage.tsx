@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Box, Paper, Typography, Button, Alert, TextField } from '@mui/material';
+import { Box, Paper, Typography, Button, Alert, TextField, Stack } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { updateCompany, getCompanies, type CreateCompanyData } from '../services/companies.service';
+import { AppLayout } from '../components/layout/AppLayout';
 
 const EditCompanyPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -63,38 +64,13 @@ const EditCompanyPage = () => {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        width: '100vw',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        bgcolor: 'background.default',
-        px: 2,
-        py: 6,
-      }}
-    >
-      <Paper
-        elevation={8}
-        sx={{
-          p: { xs: 3, sm: 6 },
-          borderRadius: 4,
-          maxWidth: 600,
-          width: '100%',
-          bgcolor: 'background.paper',
-          boxShadow: '0 8px 32px 0 rgba(99,102,241,0.15)',
-        }}
-      >
-        <Typography
-          variant="h4"
-          align="center"
-          color="primary.main"
-          fontWeight={700}
-          letterSpacing={1}
-          mb={4}
-        >
-          Editar Empresa
+    <AppLayout backTo="/companies" backLabel="Volver a empresas" maxWidth="sm">
+      <Paper sx={{ p: { xs: 3, sm: 4 } }}>
+        <Typography variant="h5" component="h1" mb={0.5}>
+          Editar empresa
+        </Typography>
+        <Typography variant="body2" color="text.secondary" mb={3}>
+          Actualiza la información de la empresa.
         </Typography>
 
         {error && (
@@ -103,79 +79,57 @@ const EditCompanyPage = () => {
           </Alert>
         )}
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <TextField
-            name="nit"
-            label="NIT"
-            value={formData.nit}
-            onChange={handleChange}
-            required
-            fullWidth
-          />
+        <Box component="form" onSubmit={handleSubmit}>
+          <Stack spacing={2.5}>
+            <TextField
+              name="nit"
+              label="NIT"
+              value={formData.nit}
+              onChange={handleChange}
+              required
+              fullWidth
+            />
 
-          <TextField
-            name="name"
-            label="Nombre"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            fullWidth
-          />
+            <TextField
+              name="name"
+              label="Nombre"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              fullWidth
+            />
 
-          <TextField
-            name="address"
-            label="Dirección"
-            value={formData.address}
-            onChange={handleChange}
-            required
-            fullWidth
-          />
+            <TextField
+              name="address"
+              label="Dirección"
+              value={formData.address}
+              onChange={handleChange}
+              required
+              fullWidth
+            />
 
-          <TextField
-            name="phone"
-            label="Teléfono"
-            value={formData.phone}
-            onChange={handleChange}
-            required
-            fullWidth
-          />
+            <TextField
+              name="phone"
+              label="Teléfono"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+              fullWidth
+            />
 
-          <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => navigate('/companies')}
-              sx={{
-                flex: 1,
-                fontWeight: 600,
-                borderRadius: 2,
-                py: 1.2,
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              sx={{
-                flex: 1,
-                fontWeight: 700,
-                borderRadius: 2,
-                py: 1.2,
-                fontSize: '1.1rem',
-                letterSpacing: 1,
-                boxShadow: '0 0 16px 0 #6366f155',
-              }}
-              disabled={loading}
-            >
-              {loading ? 'Guardando...' : 'Guardar Cambios'}
-            </Button>
-          </Box>
+            <Stack direction="row" spacing={2} justifyContent="flex-end" mt={1}>
+              <Button variant="outlined" onClick={() => navigate('/companies')}>
+                Cancelar
+              </Button>
+              <Button type="submit" variant="contained" disabled={loading}>
+                {loading ? 'Guardando...' : 'Guardar cambios'}
+              </Button>
+            </Stack>
+          </Stack>
         </Box>
       </Paper>
-    </Box>
+    </AppLayout>
   );
 };
 
-export default EditCompanyPage; 
+export default EditCompanyPage;

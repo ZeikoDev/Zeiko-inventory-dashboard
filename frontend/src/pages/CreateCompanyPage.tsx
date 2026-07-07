@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Box, Paper, Typography, TextField, Button, Alert } from '@mui/material';
+import { Box, Paper, Typography, TextField, Button, Alert, Stack } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { createCompany, type CreateCompanyData } from '../services/companies.service';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { AppLayout } from '../components/layout/AppLayout';
 
 const CreateCompanyPage = () => {
   const [formData, setFormData] = useState<CreateCompanyData>({
@@ -38,56 +38,13 @@ const CreateCompanyPage = () => {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        width: '100vw',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        bgcolor: 'background.default',
-        px: 2,
-        py: 6,
-        position: 'relative',
-      }}
-    >
-      <Button
-        startIcon={<ArrowBackIcon />}
-        onClick={() => navigate('/dashboard')}
-        sx={{
-          position: 'absolute',
-          top: 24,
-          left: 24,
-          fontWeight: 600,
-          borderRadius: 2,
-          bgcolor: 'background.paper',
-          color: 'primary.main',
-          boxShadow: '0 2px 8px 0 #6366f122',
-          zIndex: 10,
-        }}
-      >
-        Volver al Dashboard
-      </Button>
-      <Paper
-        elevation={8}
-        sx={{
-          p: { xs: 3, sm: 6 },
-          borderRadius: 4,
-          maxWidth: 600,
-          width: '100%',
-          bgcolor: 'background.paper',
-          boxShadow: '0 8px 32px 0 rgba(99,102,241,0.15)',
-        }}
-      >
-        <Typography
-          variant="h4"
-          align="center"
-          color="primary.main"
-          fontWeight={700}
-          letterSpacing={1}
-          mb={4}
-        >
-          Crear Nueva Empresa
+    <AppLayout backTo="/companies" backLabel="Volver a empresas" maxWidth="sm">
+      <Paper sx={{ p: { xs: 3, sm: 4 } }}>
+        <Typography variant="h5" component="h1" mb={0.5}>
+          Crear empresa
+        </Typography>
+        <Typography variant="body2" color="text.secondary" mb={3}>
+          Registra una nueva empresa asociada.
         </Typography>
 
         {error && (
@@ -96,83 +53,53 @@ const CreateCompanyPage = () => {
           </Alert>
         )}
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <TextField
-            label="NIT"
-            name="nit"
-            variant="outlined"
-            value={formData.nit}
-            onChange={handleChange}
-            fullWidth
-            required
-            sx={{ input: { color: 'white' } }}
-          />
-          <TextField
-            label="Nombre"
-            name="name"
-            variant="outlined"
-            value={formData.name}
-            onChange={handleChange}
-            fullWidth
-            required
-            sx={{ input: { color: 'white' } }}
-          />
-          <TextField
-            label="Dirección"
-            name="address"
-            variant="outlined"
-            value={formData.address}
-            onChange={handleChange}
-            fullWidth
-            required
-            sx={{ input: { color: 'white' } }}
-          />
-          <TextField
-            label="Teléfono"
-            name="phone"
-            variant="outlined"
-            value={formData.phone}
-            onChange={handleChange}
-            fullWidth
-            required
-            sx={{ input: { color: 'white' } }}
-          />
-          <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => navigate('/companies')}
-              sx={{
-                flex: 1,
-                fontWeight: 600,
-                borderRadius: 2,
-                py: 1.2,
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              sx={{
-                flex: 1,
-                fontWeight: 700,
-                borderRadius: 2,
-                py: 1.2,
-                fontSize: '1.1rem',
-                letterSpacing: 1,
-                boxShadow: '0 0 16px 0 #6366f155',
-              }}
-              disabled={loading}
-            >
-              {loading ? 'Creando...' : 'Crear Empresa'}
-            </Button>
-          </Box>
+        <Box component="form" onSubmit={handleSubmit}>
+          <Stack spacing={2.5}>
+            <TextField
+              label="NIT"
+              name="nit"
+              value={formData.nit}
+              onChange={handleChange}
+              fullWidth
+              required
+            />
+            <TextField
+              label="Nombre"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              fullWidth
+              required
+            />
+            <TextField
+              label="Dirección"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              fullWidth
+              required
+            />
+            <TextField
+              label="Teléfono"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              fullWidth
+              required
+            />
+            <Stack direction="row" spacing={2} justifyContent="flex-end" mt={1}>
+              <Button variant="outlined" onClick={() => navigate('/companies')}>
+                Cancelar
+              </Button>
+              <Button type="submit" variant="contained" disabled={loading}>
+                {loading ? 'Creando...' : 'Crear empresa'}
+              </Button>
+            </Stack>
+          </Stack>
         </Box>
       </Paper>
-    </Box>
+    </AppLayout>
   );
 };
 
-export default CreateCompanyPage; 
+export default CreateCompanyPage;

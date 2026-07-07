@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Box, Paper, Typography, TextField, Button, Alert, MenuItem } from '@mui/material';
+import { Box, Paper, Typography, TextField, Button, Alert, MenuItem, Stack } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { createInventory, type CreateInventoryData } from '../services/inventory.service';
 import { getProducts } from '../services/products.service';
 import { getCompanies } from '../services/companies.service';
 import type { Product } from '../services/products.service';
 import type { Company } from '../services/companies.service';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { AppLayout } from '../components/layout/AppLayout';
 
 const CreateInventoryPage = () => {
   const [formData, setFormData] = useState<CreateInventoryData>({
@@ -63,56 +63,13 @@ const CreateInventoryPage = () => {
     : products;
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        width: '100vw',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        bgcolor: 'background.default',
-        px: 2,
-        py: 6,
-        position: 'relative',
-      }}
-    >
-      <Button
-        startIcon={<ArrowBackIcon />}
-        onClick={() => navigate('/dashboard')}
-        sx={{
-          position: 'absolute',
-          top: 24,
-          left: 24,
-          fontWeight: 600,
-          borderRadius: 2,
-          bgcolor: 'background.paper',
-          color: 'primary.main',
-          boxShadow: '0 2px 8px 0 #6366f122',
-          zIndex: 10,
-        }}
-      >
-        Volver al Dashboard
-      </Button>
-      <Paper
-        elevation={8}
-        sx={{
-          p: { xs: 3, sm: 6 },
-          borderRadius: 4,
-          maxWidth: 600,
-          width: '100%',
-          bgcolor: 'background.paper',
-          boxShadow: '0 8px 32px 0 rgba(99,102,241,0.15)',
-        }}
-      >
-        <Typography
-          variant="h4"
-          align="center"
-          color="primary.main"
-          fontWeight={700}
-          letterSpacing={1}
-          mb={4}
-        >
-          Agregar al Inventario
+    <AppLayout backTo="/inventory" backLabel="Volver al inventario" maxWidth="sm">
+      <Paper sx={{ p: { xs: 3, sm: 4 } }}>
+        <Typography variant="h5" component="h1" mb={0.5}>
+          Agregar al inventario
+        </Typography>
+        <Typography variant="body2" color="text.secondary" mb={3}>
+          Registra el stock de un producto para una empresa.
         </Typography>
 
         {error && (
@@ -121,93 +78,65 @@ const CreateInventoryPage = () => {
           </Alert>
         )}
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <TextField
-            select
-            label="Empresa"
-            name="company"
-            variant="outlined"
-            value={formData.company}
-            onChange={handleChange}
-            fullWidth
-            required
-            sx={{ input: { color: 'white' } }}
-          >
-            {companies.map((company) => (
-              <MenuItem key={company.id} value={company.id}>
-                {company.name}
-              </MenuItem>
-            ))}
-          </TextField>
-
-          <TextField
-            select
-            label="Producto"
-            name="product"
-            variant="outlined"
-            value={formData.product}
-            onChange={handleChange}
-            fullWidth
-            required
-            sx={{ input: { color: 'white' } }}
-            disabled={!formData.company}
-          >
-            {filteredProducts.map((product) => (
-              <MenuItem key={product.id} value={product.id}>
-                {product.name}
-              </MenuItem>
-            ))}
-          </TextField>
-
-          <TextField
-            label="Cantidad"
-            name="quantity"
-            type="number"
-            variant="outlined"
-            value={formData.quantity}
-            onChange={handleChange}
-            fullWidth
-            required
-            inputProps={{ min: 0 }}
-            sx={{ input: { color: 'white' } }}
-          />
-
-          <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => navigate('/inventory')}
-              sx={{
-                flex: 1,
-                fontWeight: 600,
-                borderRadius: 2,
-                py: 1.2,
-              }}
+        <Box component="form" onSubmit={handleSubmit}>
+          <Stack spacing={2.5}>
+            <TextField
+              select
+              label="Empresa"
+              name="company"
+              value={formData.company}
+              onChange={handleChange}
+              fullWidth
+              required
             >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              sx={{
-                flex: 1,
-                fontWeight: 700,
-                borderRadius: 2,
-                py: 1.2,
-                fontSize: '1.1rem',
-                letterSpacing: 1,
-                boxShadow: '0 0 16px 0 #6366f155',
-              }}
-              disabled={loading}
+              {companies.map((company) => (
+                <MenuItem key={company.id} value={company.id}>
+                  {company.name}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            <TextField
+              select
+              label="Producto"
+              name="product"
+              value={formData.product}
+              onChange={handleChange}
+              fullWidth
+              required
+              disabled={!formData.company}
             >
-              {loading ? 'Agregando...' : 'Agregar al Inventario'}
-            </Button>
-          </Box>
+              {filteredProducts.map((product) => (
+                <MenuItem key={product.id} value={product.id}>
+                  {product.name}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            <TextField
+              label="Cantidad"
+              name="quantity"
+              type="number"
+              value={formData.quantity}
+              onChange={handleChange}
+              fullWidth
+              required
+              inputProps={{ min: 0 }}
+            />
+
+            <Stack direction="row" spacing={2} justifyContent="flex-end" mt={1}>
+              <Button variant="outlined" onClick={() => navigate('/inventory')}>
+                Cancelar
+              </Button>
+              <Button type="submit" variant="contained" disabled={loading}>
+                {loading ? 'Agregando...' : 'Agregar al inventario'}
+              </Button>
+            </Stack>
+          </Stack>
         </Box>
       </Paper>
-    </Box>
+    </AppLayout>
   );
 };
 
-export default CreateInventoryPage; 
+export default CreateInventoryPage;
