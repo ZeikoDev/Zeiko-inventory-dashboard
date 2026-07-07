@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Box, Typography, TextField, Button, MenuItem, Alert } from '@mui/material';
+import { Box, Paper, Typography, TextField, Button, MenuItem, Alert, Stack, CircularProgress } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getUsers, updateUser, type User } from '../services/users.service';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { AppLayout } from '../components/layout/AppLayout';
 
 const roles = [
     { value: 'admin', label: 'Administrador' },
@@ -53,88 +53,70 @@ const EditUserPage = () => {
         }
     };
 
-    if (!user && !error) return <Typography>Cargando...</Typography>;
+    if (!user && !error) {
+        return (
+            <AppLayout backTo="/users" backLabel="Volver a usuarios" maxWidth="sm">
+                <Box sx={{ display: 'flex', justifyContent: 'center', p: 6 }}>
+                    <CircularProgress />
+                </Box>
+            </AppLayout>
+        );
+    }
 
     return (
-        <Box
-            sx={{
-                minHeight: '100vh',
-                width: '100vw',
-                bgcolor: 'background.default',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                px: 2,
-                py: 4,
-                position: 'relative',
-            }}
-        >
-            <Button
-                startIcon={<ArrowBackIcon />}
-                onClick={() => navigate('/users')}
-                sx={{
-                    position: 'absolute',
-                    top: 24,
-                    left: 24,
-                    fontWeight: 600,
-                    borderRadius: 2,
-                    bgcolor: 'background.paper',
-                    color: 'primary.main',
-                    boxShadow: '0 2px 8px 0 #6366f122',
-                    zIndex: 10,
-                }}
-            >
-                Volver a Usuarios
-            </Button>
-            <Box sx={{ maxWidth: 400, mx: 'auto', p: 4, bgcolor: 'background.paper', borderRadius: 3, boxShadow: 3 }}>
-                <Typography variant="h4" mb={3} color="primary.main" fontWeight={700}>Editar Usuario</Typography>
-                {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-                <form onSubmit={handleSubmit}>
-                    <TextField
-                        label="Usuario"
-                        value={username}
-                        onChange={e => setUsername(e.target.value)}
-                        fullWidth
-                        required
-                        margin="normal"
-                    />
-                    <TextField
-                        label="Correo"
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                        fullWidth
-                        required
-                        margin="normal"
-                    />
-                    <TextField
-                        select
-                        label="Rol"
-                        value={role}
-                        onChange={e => setRole(e.target.value)}
-                        fullWidth
-                        required
-                        margin="normal"
-                    >
-                        {roles.map(option => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                        ))}
-                    </TextField>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                        sx={{ mt: 3 }}
-                        disabled={loading}
-                    >
-                        {loading ? 'Actualizando...' : 'Actualizar Usuario'}
-                    </Button>
-                </form>
-            </Box>
-        </Box>
+        <AppLayout backTo="/users" backLabel="Volver a usuarios" maxWidth="sm">
+            <Paper sx={{ p: { xs: 3, sm: 4 } }}>
+                <Typography variant="h5" component="h1" mb={0.5}>
+                    Editar usuario
+                </Typography>
+                <Typography variant="body2" color="text.secondary" mb={3}>
+                    Actualiza los datos de la cuenta.
+                </Typography>
+                {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+                <Box component="form" onSubmit={handleSubmit}>
+                    <Stack spacing={2.5}>
+                        <TextField
+                            label="Usuario"
+                            value={username}
+                            onChange={e => setUsername(e.target.value)}
+                            fullWidth
+                            required
+                        />
+                        <TextField
+                            label="Correo"
+                            type="email"
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                            fullWidth
+                            required
+                        />
+                        <TextField
+                            select
+                            label="Rol"
+                            value={role}
+                            onChange={e => setRole(e.target.value)}
+                            fullWidth
+                            required
+                        >
+                            {roles.map(option => (
+                                <MenuItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                        <Stack direction="row" spacing={2} justifyContent="flex-end" mt={1}>
+                            <Button variant="outlined" onClick={() => navigate('/users')}>
+                                Cancelar
+                            </Button>
+                            <Button type="submit" variant="contained" disabled={loading}>
+                                {loading ? 'Actualizando...' : 'Guardar cambios'}
+                            </Button>
+                        </Stack>
+                    </Stack>
+                </Box>
+            </Paper>
+        </AppLayout>
     );
 };
 
-export default EditUserPage; 
+export default EditUserPage;

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Box, Paper, Typography, Button, Alert, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Box, Paper, Typography, Button, Alert, TextField, FormControl, InputLabel, Select, MenuItem, Stack } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { updateProduct, getProducts, type CreateProductData } from '../services/products.service';
 import { getCompanies, type Company } from '../services/companies.service';
+import { AppLayout } from '../components/layout/AppLayout';
 
 const EditProductPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -84,38 +85,13 @@ const EditProductPage = () => {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        width: '100vw',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        bgcolor: 'background.default',
-        px: 2,
-        py: 6,
-      }}
-    >
-      <Paper
-        elevation={8}
-        sx={{
-          p: { xs: 3, sm: 6 },
-          borderRadius: 4,
-          maxWidth: 600,
-          width: '100%',
-          bgcolor: 'background.paper',
-          boxShadow: '0 8px 32px 0 rgba(99,102,241,0.15)',
-        }}
-      >
-        <Typography
-          variant="h4"
-          align="center"
-          color="primary.main"
-          fontWeight={700}
-          letterSpacing={1}
-          mb={4}
-        >
-          Editar Producto
+    <AppLayout backTo="/products" backLabel="Volver a productos" maxWidth="sm">
+      <Paper sx={{ p: { xs: 3, sm: 4 } }}>
+        <Typography variant="h5" component="h1" mb={0.5}>
+          Editar producto
+        </Typography>
+        <Typography variant="body2" color="text.secondary" mb={3}>
+          Actualiza la información del producto.
         </Typography>
 
         {error && (
@@ -124,123 +100,101 @@ const EditProductPage = () => {
           </Alert>
         )}
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <TextField
-            name="code"
-            label="Código"
-            value={formData.code}
-            onChange={handleChange}
-            required
-            fullWidth
-          />
-
-          <TextField
-            name="name"
-            label="Nombre"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            fullWidth
-          />
-
-          <TextField
-            name="characteristics"
-            label="Características"
-            value={formData.characteristics}
-            onChange={handleChange}
-            required
-            fullWidth
-            multiline
-            rows={4}
-          />
-
-          <TextField
-            name="price_usd"
-            label="Precio USD"
-            type="number"
-            value={formData.price_usd}
-            onChange={handleChange}
-            required
-            fullWidth
-            inputProps={{ min: 0, step: 0.01 }}
-          />
-
-          <TextField
-            name="price_eur"
-            label="Precio EUR"
-            type="number"
-            value={formData.price_eur}
-            onChange={handleChange}
-            required
-            fullWidth
-            inputProps={{ min: 0, step: 0.01 }}
-          />
-
-          <TextField
-            name="price_cop"
-            label="Precio COP"
-            type="number"
-            value={formData.price_cop}
-            onChange={handleChange}
-            required
-            fullWidth
-            inputProps={{ min: 0, step: 0.01 }}
-          />
-
-          <FormControl fullWidth>
-            <InputLabel id="company-label">Empresa</InputLabel>
-            <Select
-              labelId="company-label"
-              name="company"
-              value={formData.company || ''}
-              onChange={handleSelectChange}
-              label="Empresa"
+        <Box component="form" onSubmit={handleSubmit}>
+          <Stack spacing={2.5}>
+            <TextField
+              name="code"
+              label="Código"
+              value={formData.code}
+              onChange={handleChange}
               required
-            >
-              {companies.map((company) => (
-                <MenuItem key={company.id} value={company.id}>
-                  {company.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              fullWidth
+            />
 
-          <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => navigate('/products')}
-              sx={{
-                flex: 1,
-                fontWeight: 600,
-                borderRadius: 2,
-                py: 1.2,
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              sx={{
-                flex: 1,
-                fontWeight: 700,
-                borderRadius: 2,
-                py: 1.2,
-                fontSize: '1.1rem',
-                letterSpacing: 1,
-                boxShadow: '0 0 16px 0 #6366f155',
-              }}
-              disabled={loading}
-            >
-              {loading ? 'Guardando...' : 'Guardar Cambios'}
-            </Button>
-          </Box>
+            <TextField
+              name="name"
+              label="Nombre"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              fullWidth
+            />
+
+            <TextField
+              name="characteristics"
+              label="Características"
+              value={formData.characteristics}
+              onChange={handleChange}
+              required
+              fullWidth
+              multiline
+              rows={4}
+            />
+
+            <TextField
+              name="price_usd"
+              label="Precio USD"
+              type="number"
+              value={formData.price_usd}
+              onChange={handleChange}
+              required
+              fullWidth
+              inputProps={{ min: 0, step: 0.01 }}
+            />
+
+            <TextField
+              name="price_eur"
+              label="Precio EUR"
+              type="number"
+              value={formData.price_eur}
+              onChange={handleChange}
+              required
+              fullWidth
+              inputProps={{ min: 0, step: 0.01 }}
+            />
+
+            <TextField
+              name="price_cop"
+              label="Precio COP"
+              type="number"
+              value={formData.price_cop}
+              onChange={handleChange}
+              required
+              fullWidth
+              inputProps={{ min: 0, step: 0.01 }}
+            />
+
+            <FormControl fullWidth>
+              <InputLabel id="company-label">Empresa</InputLabel>
+              <Select
+                labelId="company-label"
+                name="company"
+                value={formData.company || ''}
+                onChange={handleSelectChange}
+                label="Empresa"
+                required
+              >
+                {companies.map((company) => (
+                  <MenuItem key={company.id} value={company.id}>
+                    {company.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <Stack direction="row" spacing={2} justifyContent="flex-end" mt={1}>
+              <Button variant="outlined" onClick={() => navigate('/products')}>
+                Cancelar
+              </Button>
+              <Button type="submit" variant="contained" disabled={loading}>
+                {loading ? 'Guardando...' : 'Guardar cambios'}
+              </Button>
+            </Stack>
+          </Stack>
         </Box>
       </Paper>
-    </Box>
+    </AppLayout>
   );
 };
 
-export default EditProductPage; 
+export default EditProductPage;

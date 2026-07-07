@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Box, Typography, Button, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Alert } from '@mui/material';
+import { Box, Typography, Button, IconButton, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Alert } from '@mui/material';
 import { getProducts } from '../services/products.service';
 import type { Product } from '../services/products.service';
 import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import AddIcon from '@mui/icons-material/Add';
+import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
 import { api, getApiErrorMessage } from '../services/api';
 import { getCompanies, type Company } from '../services/companies.service';
 import { getAuth } from '../services/auth.service';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { deleteProduct } from '../services/products.service';
 import { Table } from '../components/organisms/Table';
-import { Card } from '../components/atoms/Card';
+import { AppLayout } from '../components/layout/AppLayout';
 
 const ProductsPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -131,99 +131,71 @@ const ProductsPage = () => {
       id: 'actions',
       label: 'Acciones',
       render: (_: unknown, row: Product) => (
-        <Box>
-          <Button
+        <Box sx={{ whiteSpace: 'nowrap' }}>
+          <IconButton
             size="small"
             color="primary"
             onClick={() => navigate(`/products/edit/${row.id}`)}
-            sx={{ minWidth: 0, mr: 1 }}
+            sx={{ mr: 0.5 }}
           >
-            <EditIcon />
-          </Button>
-          <Button
+            <EditIcon fontSize="small" />
+          </IconButton>
+          <IconButton
             size="small"
             color="error"
             onClick={() => handleDeleteClick(row)}
-            sx={{ minWidth: 0 }}
           >
-            <DeleteIcon />
-          </Button>
+            <DeleteIcon fontSize="small" />
+          </IconButton>
         </Box>
       )
     }] : [])
   ];
 
   return (
-    <Box sx={{ minHeight: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default', px: 2, py: 6, position: 'relative' }}>
-      <Button
-        startIcon={<ArrowBackIcon />}
-        onClick={() => navigate('/dashboard')}
-        sx={{
-          position: 'absolute',
-          top: 24,
-          left: 24,
-          fontWeight: 600,
-          borderRadius: 2,
-          bgcolor: 'background.paper',
-          color: 'primary.main',
-          boxShadow: '0 2px 8px 0 #6366f122',
-          zIndex: 10,
-        }}
-      >
-        Volver al Dashboard
-      </Button>
-      <Box sx={{ width: '100%', maxWidth: 1200, mb: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-          <Typography variant="h5" color="primary.main" fontWeight={600} letterSpacing={1}>
-            Productos registrados
-          </Typography>
+    <AppLayout
+      title="Productos"
+      subtitle="Catálogo de productos registrados"
+      backTo="/dashboard"
+      backLabel="Volver al dashboard"
+      actions={
+        <>
           <Button
             variant="outlined"
-            color="secondary"
-            startIcon={<InfoOutlinedIcon />}
-            sx={{
-              fontWeight: 600,
-              borderRadius: 2,
-              px: 3,
-              py: 1,
-              borderWidth: 2,
-              borderColor: 'secondary.main',
-              ml: 2,
-            }}
+            startIcon={<AutoAwesomeOutlinedIcon />}
             onClick={handleRecommendationClick}
           >
-            Recomendación de producto tendencia con IA
+            Recomendación con IA
           </Button>
-        </Box>
-        {userRole === 'admin' && (
-          <Button variant="contained" color="primary" sx={{ mb: 3, fontWeight: 700, borderRadius: 2, py: 1.2, fontSize: '1.1rem', letterSpacing: 1 }} onClick={() => navigate('/products/create')}>
-            Crear nuevo producto
-          </Button>
-        )}
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>
-        )}
-        <Card>
-          {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-              <CircularProgress color="primary" />
-            </Box>
-          ) : (
-            <Table
-              columns={columns}
-              data={products}
-            />
+          {userRole === 'admin' && (
+            <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/products/create')}>
+              Nuevo producto
+            </Button>
           )}
-        </Card>
-      </Box>
+        </>
+      }
+    >
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>
+      )}
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 6 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Table
+          columns={columns}
+          data={products}
+        />
+      )}
+
       {userRole === 'admin' && (
         <Dialog
           open={deleteDialogOpen}
           onClose={() => setDeleteDialogOpen(false)}
-          PaperProps={{ sx: { bgcolor: 'background.paper', borderRadius: 2 } }}
         >
-          <DialogTitle sx={{ color: 'primary.main', fontWeight: 600 }}>
-            Confirmar Eliminación
+          <DialogTitle>
+            Confirmar eliminación
           </DialogTitle>
           <DialogContent>
             <Typography>
@@ -232,10 +204,10 @@ const ProductsPage = () => {
             </Typography>
           </DialogContent>
           <DialogActions sx={{ p: 2, pt: 0 }}>
-            <Button onClick={() => setDeleteDialogOpen(false)} sx={{ fontWeight: 600 }}>
+            <Button onClick={() => setDeleteDialogOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleDeleteConfirm} color="error" variant="contained" disabled={loading} sx={{ fontWeight: 600 }}>
+            <Button onClick={handleDeleteConfirm} color="error" variant="contained" disabled={loading}>
               {loading ? 'Eliminando...' : 'Eliminar'}
             </Button>
           </DialogActions>
@@ -262,12 +234,12 @@ const ProductsPage = () => {
         <DialogActions>
           <Button onClick={() => setAskCompanyOpen(false)}>Cancelar</Button>
           <Button onClick={handleAskCompanyConfirm} variant="contained" color="primary">
-            Obtener Recomendación
+            Obtener recomendación
           </Button>
         </DialogActions>
       </Dialog>
       <Dialog open={recommendationOpen} onClose={() => setRecommendationOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Recomendación de Productos</DialogTitle>
+        <DialogTitle>Recomendación de productos</DialogTitle>
         <DialogContent>
           {recommendationError ? (
             <Alert severity="error" sx={{ mt: 2 }}>
@@ -279,7 +251,7 @@ const ProductsPage = () => {
             </Typography>
           ) : (
             <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-              <CircularProgress color="primary" />
+              <CircularProgress />
             </Box>
           )}
         </DialogContent>
@@ -287,8 +259,8 @@ const ProductsPage = () => {
           <Button onClick={() => setRecommendationOpen(false)}>Cerrar</Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </AppLayout>
   );
 };
 
-export default ProductsPage; 
+export default ProductsPage;

@@ -10,14 +10,20 @@ import {
   IconButton,
   Alert,
   Stack,
-  Avatar,
-  CircularProgress
+  Tooltip,
+  CircularProgress,
+  alpha
 } from '@mui/material';
-import { Visibility, VisibilityOff, Inventory2Rounded } from '@mui/icons-material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
+import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 import { login, saveAuth, AuthError } from '../services/auth.service';
+import { useColorMode } from '../context/ColorModeContext';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { mode, toggleColorMode } = useColorMode();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -46,48 +52,50 @@ const LoginPage = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        bgcolor: 'background.default',
         px: 2,
         py: 4,
+        position: 'relative',
       }}
     >
+      <Tooltip title={mode === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}>
+        <IconButton
+          onClick={toggleColorMode}
+          sx={{ position: 'absolute', top: 16, right: 16, color: 'text.secondary' }}
+        >
+          {mode === 'dark' ? <LightModeOutlinedIcon /> : <DarkModeOutlinedIcon />}
+        </IconButton>
+      </Tooltip>
+
       <Paper
-        elevation={0}
         sx={{
           p: { xs: 3, sm: 5 },
-          borderRadius: 4,
-          background: 'rgba(30, 41, 59, 0.7)',
-          backdropFilter: 'blur(16px)',
-          maxWidth: 440,
+          maxWidth: 420,
           width: '100%',
         }}
       >
         <Stack spacing={3} alignItems="center">
-          <Avatar
+          <Box
             sx={{
-              width: 64,
-              height: 64,
-              background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
-              boxShadow: '0 8px 24px rgba(99, 102, 241, 0.4)',
+              width: 52,
+              height: 52,
+              borderRadius: 2,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              bgcolor: (theme) => alpha(theme.palette.primary.main, 0.12),
+              color: 'primary.main',
             }}
           >
-            <Inventory2Rounded fontSize="large" />
-          </Avatar>
+            <Inventory2OutlinedIcon />
+          </Box>
 
           <Box textAlign="center">
-            <Typography
-              variant="h4"
-              component="h1"
-              sx={{
-                background: 'linear-gradient(135deg, #818cf8, #c084fc)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                mb: 1,
-              }}
-            >
+            <Typography variant="h5" component="h1" color="text.primary" mb={0.5}>
               Zeiko Inventory
             </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Inicia sesión para continuar
+            <Typography variant="body2" color="text.secondary">
+              Inicia sesión para gestionar tu inventario
             </Typography>
           </Box>
 
@@ -139,9 +147,9 @@ const LoginPage = () => {
                 size="large"
                 fullWidth
                 disabled={loading}
-                sx={{ py: 1.4, mt: 1 }}
+                sx={{ py: 1.3, mt: 1 }}
               >
-                {loading ? <CircularProgress size={26} color="inherit" /> : 'Iniciar Sesión'}
+                {loading ? <CircularProgress size={24} color="inherit" /> : 'Iniciar sesión'}
               </Button>
             </Stack>
           </Box>

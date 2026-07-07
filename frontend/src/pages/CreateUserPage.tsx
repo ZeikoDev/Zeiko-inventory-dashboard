@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Box, Typography, TextField, Button, MenuItem, Alert } from '@mui/material';
+import { Box, Paper, Typography, TextField, Button, MenuItem, Alert, Stack } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { createUser } from '../services/users.service';
+import { AppLayout } from '../components/layout/AppLayout';
 
 const roles = [
     { value: 'admin', label: 'Administrador' },
@@ -32,63 +33,67 @@ const CreateUserPage = () => {
     };
 
     return (
-        <Box sx={{ maxWidth: 400, mx: 'auto', mt: 8, p: 4, bgcolor: 'background.paper', borderRadius: 3, boxShadow: 3 }}>
-            <Typography variant="h4" mb={3} color="primary.main" fontWeight={700}>Crear Usuario</Typography>
-            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-            <form onSubmit={handleSubmit}>
-                <TextField
-                    label="Usuario"
-                    value={username}
-                    onChange={e => setUsername(e.target.value)}
-                    fullWidth
-                    required
-                    margin="normal"
-                />
-                <TextField
-                    label="Correo"
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    fullWidth
-                    required
-                    margin="normal"
-                />
-                <TextField
-                    label="Contraseña"
-                    type="password"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    fullWidth
-                    required
-                    margin="normal"
-                />
-                <TextField
-                    select
-                    label="Rol"
-                    value={role}
-                    onChange={e => setRole(e.target.value)}
-                    fullWidth
-                    required
-                    margin="normal"
-                >
-                    {roles.map(option => (
-                        <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                        </MenuItem>
-                    ))}
-                </TextField>
-                <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    sx={{ mt: 3 }}
-                    disabled={loading}
-                >
-                    {loading ? 'Creando...' : 'Crear Usuario'}
-                </Button>
-            </form>
-        </Box>
+        <AppLayout backTo="/users" backLabel="Volver a usuarios" maxWidth="sm">
+            <Paper sx={{ p: { xs: 3, sm: 4 } }}>
+                <Typography variant="h5" component="h1" mb={0.5}>
+                    Crear usuario
+                </Typography>
+                <Typography variant="body2" color="text.secondary" mb={3}>
+                    Crea una cuenta y asigna su rol.
+                </Typography>
+                {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+                <Box component="form" onSubmit={handleSubmit}>
+                    <Stack spacing={2.5}>
+                        <TextField
+                            label="Usuario"
+                            value={username}
+                            onChange={e => setUsername(e.target.value)}
+                            fullWidth
+                            required
+                        />
+                        <TextField
+                            label="Correo"
+                            type="email"
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                            fullWidth
+                            required
+                        />
+                        <TextField
+                            label="Contraseña"
+                            type="password"
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
+                            fullWidth
+                            required
+                        />
+                        <TextField
+                            select
+                            label="Rol"
+                            value={role}
+                            onChange={e => setRole(e.target.value)}
+                            fullWidth
+                            required
+                        >
+                            {roles.map(option => (
+                                <MenuItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                        <Stack direction="row" spacing={2} justifyContent="flex-end" mt={1}>
+                            <Button variant="outlined" onClick={() => navigate('/users')}>
+                                Cancelar
+                            </Button>
+                            <Button type="submit" variant="contained" disabled={loading}>
+                                {loading ? 'Creando...' : 'Crear usuario'}
+                            </Button>
+                        </Stack>
+                    </Stack>
+                </Box>
+            </Paper>
+        </AppLayout>
     );
 };
 
-export default CreateUserPage; 
+export default CreateUserPage;

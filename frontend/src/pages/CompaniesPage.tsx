@@ -3,11 +3,11 @@ import { Box, Typography, Button, IconButton, Dialog, DialogTitle, DialogContent
 import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import AddIcon from '@mui/icons-material/Add';
 import { getCompanies, deleteCompany, type Company } from '../services/companies.service';
 import { getAuth } from '../services/auth.service';
 import { Table } from '../components/organisms/Table';
-import { Card } from '../components/atoms/Card';
+import { AppLayout } from '../components/layout/AppLayout';
 
 const CompaniesPage = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -62,19 +62,21 @@ const CompaniesPage = () => {
       id: 'actions',
       label: 'Acciones',
       render: (_: unknown, row: Company) => (
-        <Box>
+        <Box sx={{ whiteSpace: 'nowrap' }}>
           <IconButton
+            size="small"
             color="primary"
             onClick={() => navigate(`/companies/edit/${row.id}`)}
-            sx={{ mr: 1 }}
+            sx={{ mr: 0.5 }}
           >
-            <EditIcon />
+            <EditIcon fontSize="small" />
           </IconButton>
           <IconButton
+            size="small"
             color="error"
             onClick={() => handleDeleteClick(row)}
           >
-            <DeleteIcon />
+            <DeleteIcon fontSize="small" />
           </IconButton>
         </Box>
       )
@@ -82,91 +84,38 @@ const CompaniesPage = () => {
   ];
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        width: '100vw',
-        bgcolor: 'background.default',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        px: 2,
-        py: 4,
-        position: 'relative',
-      }}
+    <AppLayout
+      title="Empresas"
+      subtitle="Empresas asociadas a tu operación"
+      backTo="/dashboard"
+      backLabel="Volver al dashboard"
+      maxWidth="md"
+      actions={
+        userRole === 'admin' ? (
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/companies/create')}>
+            Nueva empresa
+          </Button>
+        ) : undefined
+      }
     >
-      <Button
-        startIcon={<ArrowBackIcon />}
-        onClick={() => navigate('/dashboard')}
-        sx={{
-          position: 'absolute',
-          top: 24,
-          left: 24,
-          fontWeight: 600,
-          borderRadius: 2,
-          bgcolor: 'background.paper',
-          color: 'primary.main',
-          boxShadow: '0 2px 8px 0 #6366f122',
-          zIndex: 10,
-        }}
-      >
-        Volver al Dashboard
-      </Button>
-      <Box sx={{ width: '100%', maxWidth: 900, mx: 'auto' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-          <Typography
-            variant="h4"
-            color="primary.main"
-            fontWeight={700}
-            letterSpacing={1}
-          >
-            Empresas
-          </Typography>
-          {userRole === 'admin' && (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => navigate('/companies/create')}
-              sx={{
-                fontWeight: 600,
-                borderRadius: 2,
-                px: 3,
-                py: 1,
-                boxShadow: '0 0 16px 0 #6366f155',
-              }}
-            >
-              Crear Empresa
-            </Button>
-          )}
-        </Box>
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
-          </Alert>
-        )}
-
-        <Card>
-          <Table
-            columns={columns}
-            data={companies}
-          />
-        </Card>
-      </Box>
+      <Table
+        columns={columns}
+        data={companies}
+      />
 
       {userRole === 'admin' && (
         <Dialog
           open={deleteDialogOpen}
           onClose={() => setDeleteDialogOpen(false)}
-          PaperProps={{
-            sx: {
-              bgcolor: 'background.paper',
-              borderRadius: 2,
-            }
-          }}
         >
-          <DialogTitle sx={{ color: 'primary.main', fontWeight: 600 }}>
-            Confirmar Eliminación
+          <DialogTitle>
+            Confirmar eliminación
           </DialogTitle>
           <DialogContent>
             <Typography>
@@ -175,10 +124,7 @@ const CompaniesPage = () => {
             </Typography>
           </DialogContent>
           <DialogActions sx={{ p: 2, pt: 0 }}>
-            <Button
-              onClick={() => setDeleteDialogOpen(false)}
-              sx={{ fontWeight: 600 }}
-            >
+            <Button onClick={() => setDeleteDialogOpen(false)}>
               Cancelar
             </Button>
             <Button
@@ -186,15 +132,14 @@ const CompaniesPage = () => {
               color="error"
               variant="contained"
               disabled={loading}
-              sx={{ fontWeight: 600 }}
             >
               {loading ? 'Eliminando...' : 'Eliminar'}
             </Button>
           </DialogActions>
         </Dialog>
       )}
-    </Box>
+    </AppLayout>
   );
 };
 
-export default CompaniesPage; 
+export default CompaniesPage;
